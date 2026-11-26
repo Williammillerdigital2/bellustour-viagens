@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bellustour • Cruzeiros, Viagens & Experiências</title>
+  <meta name="description" content="Bellustour Viagens — Especialista em Cruzeiros (saídas de Santos 3/4 e 7/8 dias e demais portos), Viagens Nacionais, Internacionais, Pacotes Promocionais e Últimas Vagas." />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#030917" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Bellustour • Cruzeiros, Viagens & Experiências" />
+  <meta property="og:description" content="Explore nossas categorias interativas e faça sua cotação personalizada com o especialista Matheus." />
+  <meta property="og:image" content="assets/logo.jpeg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpeg" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TravelAgency",
+    "name": "Bellustour Viagens & Cruzeiros",
+    "description": "Agência de viagens especialista em Cruzeiros Nacionais e Internacionais, Pacotes Promocionais e Últimas Vagas.",
+    "image": "assets/logo.jpeg",
+    "priceRange": "$$"
+  }
+  </script>
+</head>
+<body class="home-stage-locked">
+
+  <!-- ========================================================================
+       MINIMALIST FLOATING HEADER
+       ======================================================================== -->
+  <header class="site-header" role="banner">
+    <div class="wrap header-inner">
+      <a href="#top" class="brand-link" aria-label="Bellustour Início">
+        <img id="brand-logo-img" class="brand-logo-img" src="assets/logo-transparent.png" alt="Bellustour Logo Completa" style="display: none;" />
+
+        <!-- Emblema Oficial Extraído em Alta Resolução da logo.jpeg (Proporção 100% original 891x382 sem distorção) -->
+        <img id="brand-emblem-svg" class="brand-emblem-svg" src="assets/logo-emblem.png" width="891" height="382" alt="Emblema Bellustour" />
+
+        <div class="brand-wordmark" id="brand-wordmark">
+          <div class="brand-title">
+            <span class="bellus">BELLUS</span><span class="tour">TOUR</span>
+          </div>
+          <span class="brand-sub" id="brand-tagline">VIAGENS • CRUZEIROS • EXPERIÊNCIAS</span>
+        </div>
+      </a>
+
+      <!-- Quick Category Focus Selector in Header -->
+      <nav class="header-cat-bar" id="header-cat-bar" aria-label="Navegar categorias"></nav>
+
+      <div class="header-actions">
+        <button type="button" class="btn btn-gold" id="header-quote-btn">
+          <span id="header-btn-text">Fale Conosco</span>
+          <span aria-hidden="true">💬</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       SINGLE-SCREEN 100% CLEAN INTERACTIVE CATEGORY CAROUSEL (msp-future-carousel)
+       ======================================================================== -->
+  <main class="hero-stage" id="stage-carousel">
+    <!-- Reactive Ambient Backdrop -->
+    <div class="stage-backdrop" aria-hidden="true">
+      <img id="stage-backdrop-img" class="stage-backdrop-img" src="https://images.unsplash.com/photo-1548574505-5e239809ee19?auto=format&fit=crop&w=1600&q=85" alt="" fetchpriority="high" />
+      <div class="stage-backdrop-overlay"></div>
+    </div>
+
+    <!-- Clean Minimal Stage Heading -->
+    <div class="stage-top">
+      <p class="stage-kicker" id="hero-badge-text">BELLUSTOUR • CURADORIA POR MATHEUS</p>
+      <h1 class="stage-headline" id="hero-title-text">
+        Escolha sua próxima <span class="gold-serif">experiência</span>
+      </h1>
+    </div>
+
+    <!-- 3D Category Cards Carousel -->
+    <div class="carousel-viewport" id="carousel-viewport" aria-roledescription="carousel" aria-label="Categorias de Viagens">
+      <div class="carousel-track-3d" id="carousel-track-3d">
+        <!-- The 5 Category Cards are rendered here by app.js -->
+      </div>
+    </div>
+
+    <!-- Bottom HUD & Discrete Legal Links (No numeric counter or arrows, no Admin link) -->
+    <div class="wrap stage-bottom-bar">
+      <div class="hud-dots" id="carousel-dots" role="tablist" aria-label="Categorias"></div>
+
+      <div class="stage-mini-legal">
+        <a href="privacy.html">Privacidade</a>
+        <span>•</span>
+        <a href="terms.html">Termos</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       POPUP 1: IMMERSIVE CATEGORY PACKAGES SHOWCASE (Opens on Category Click)
+       ======================================================================== -->
+  <div class="modal-backdrop" id="category-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="cat-modal-title">
+    <div class="category-showcase-modal">
+      <div class="showcase-header">
+        <div>
+          <p class="stage-kicker" id="cat-modal-badge">01 • FOCO PRINCIPAL</p>
+          <h2 id="cat-modal-title" style="font-size: clamp(1.45rem, 2.4vw, 2.1rem); font-weight: 800; margin-top: 2px;">Cruzeiros</h2>
+          <p id="cat-modal-sub" style="font-size: 0.88rem; color: var(--ink-muted); margin-top: 4px;"></p>
+        </div>
+        <button type="button" class="modal-close" id="cat-modal-close-btn" aria-label="Voltar ao Carousel">✕</button>
+      </div>
+
+      <!-- Quick Category Switcher + Sleek Horizontal Navigation inside the Popup -->
+      <div class="showcase-toolbar">
+        <div class="showcase-switcher-pills" id="showcase-switcher-pills"></div>
+        <div class="showcase-nav-arrows hidden" id="showcase-nav-arrows">
+          <span style="font-size: 0.74rem; color: var(--ink-muted); margin-right: 4px;">Deslize para ver mais</span>
+          <button type="button" class="rail-arrow-btn" id="pkg-rail-prev" aria-label="Pacotes anteriores">←</button>
+          <button type="button" class="rail-arrow-btn" id="pkg-rail-next" aria-label="Próximos pacotes">→</button>
+        </div>
+      </div>
+
+      <!-- Packages Horizontal Glide Rail (Always 1 clean row of 3 cards, zero scrollbar) -->
+      <div class="packages-grid" id="category-packages-grid"></div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       POPUP 2: MATHEUS QUOTE FORM MODAL (-> WHATSAPP)
+       ======================================================================== -->
+  <div class="modal-backdrop" id="quote-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="popup-welcome-title">
+    <div class="quote-modal">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <span style="font-size: 0.72rem; font-weight: 800; letter-spacing: 0.14em; color: var(--gold); text-transform: uppercase;">COTAÇÃO PERSONALIZADA</span>
+        <button type="button" class="modal-close" id="modal-close-btn" aria-label="Fechar cotação">✕</button>
+      </div>
+
+      <!-- Selected Package Pill -->
+      <div class="modal-selected-pkg" id="modal-selected-pkg">
+        <img id="modal-pkg-img" src="assets/logo.jpeg" alt="" />
+        <div>
+          <span id="modal-pkg-cat" style="font-size: 0.68rem; font-weight: 800; color: var(--ocean-bright); text-transform: uppercase; letter-spacing: 0.08em;">CRUZEIROS</span>
+          <h3 id="modal-pkg-title" style="font-size: 0.98rem; font-weight: 800; color: #fff;">Cotação Bellustour</h3>
+          <p id="modal-pkg-price" style="font-size: 0.76rem; color: var(--gold-bright); font-weight: 600;"></p>
+        </div>
+      </div>
+
+      <!-- Matheus Welcome Greeting -->
+      <div class="matheus-greeting">
+        <strong id="popup-welcome-title">Olá! Seja muito bem-vindo(a)!</strong>
+        <p id="popup-welcome-intro" style="font-weight: 700; color: #fff;">Aqui é o Matheus, seu especialista em cruzeiros 😎✨</p>
+        <p id="popup-welcome-pitch" style="color: var(--ink-muted);">Vou te ajudar a encontrar a melhor viagem com o melhor preço — aquela experiência perfeita que você merece! 🛳️🌅</p>
+        <p id="popup-welcome-prompt" style="font-size: 0.8rem; color: var(--gold-bright); margin-top: 2px; font-weight: 600;">Para eu te enviar as melhores opções, me conta rapidinho:</p>
+      </div>
+
+      <form class="quote-form" id="quote-form">
+        <div class="form-group">
+          <label for="field-port">📍 De qual porto você gostaria de sair?</label>
+          <select id="field-port" name="port" class="form-control" required></select>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="field-passengers">👨‍👩‍👧‍👦 Quantas pessoas vão viajar?</label>
+            <select id="field-passengers" name="passengers" class="form-control" required></select>
+          </div>
+
+          <div class="form-group">
+            <label for="field-adults">🔞 Todos são adultos?</label>
+            <select id="field-adults" name="adults" class="form-control" required></select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="field-month">📅 Qual mês você pretende viajar?</label>
+          <select id="field-month" name="month" class="form-control" required></select>
+        </div>
+
+        <div class="form-group">
+          <label>⏳ Qual duração você prefere?</label>
+          <div class="duration-options" id="duration-options">
+            <label class="duration-pill" id="dur-pill-short">
+              <input type="radio" name="duration" value="3/4 dias" />
+              <span class="dur-title">3 / 4 dias</span>
+              <span class="dur-sub">Mini Cruzeiro (Exclusivo Santos)</span>
+            </label>
+            <label class="duration-pill selected" id="dur-pill-long">
+              <input type="radio" name="duration" value="7/8 dias" checked />
+              <span class="dur-title">7 / 8 dias</span>
+              <span class="dur-sub">Roteiro Completo (Todos os portos)</span>
+            </label>
+          </div>
+
+          <div class="port-rule-callout">
+            <span id="rule-santos-text">👉 Saindo de Santos: temos opções de 3/4 dias ou 7/8 dias</span>
+            <span id="rule-other-text">👉 Outros portos: roteiros de 7/8 dias</span>
+          </div>
+        </div>
+
+        <p id="popup-welcome-footer" style="font-size: 0.78rem; color: var(--ink-muted); text-align: center;">
+          Assim já te mando as melhores ofertas disponíveis pra você hoje!
+        </p>
+
+        <button type="submit" class="btn btn-gold modal-submit-btn" id="popup-submit-btn">
+          <span id="popup-btn-label">Cotação</span>
+          <span aria-hidden="true">💬</span>
+        </button>
+
+        <div class="whatsapp-fallback-box" id="whatsapp-fallback-box">
+          <p style="font-weight: 700; color: #34d399; margin-bottom: 4px;">✓ Mensagem pronta para envio!</p>
+          <p style="color: var(--ink-muted); margin-bottom: 6px;">
+            O número de WhatsApp está em branco. Configure-o no <a href="admin.html" style="color: var(--gold-bright); text-decoration: underline; font-weight: 700;">Painel Admin (/admin.html)</a> para redirecionar direto para o WhatsApp:
+          </p>
+          <pre id="whatsapp-preview-text" style="white-space: pre-wrap; background: rgba(0,0,0,0.45); padding: 10px; border-radius: 8px; font-size: 0.75rem; color: #e2e8f0;"></pre>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/default-config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

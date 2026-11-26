@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel de Controle Fácil • Bellustour Viagens</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpeg" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Top Header on Admin: Static/Solid so it never overlaps content on scroll */
+    .admin-top-header {
+      position: relative;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      background: #040d21;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .admin-shell {
+      min-height: calc(100svh - 70px);
+      padding-top: 24px;
+      padding-bottom: 110px;
+      background: var(--bg-deep);
+    }
+
+    /* Friendly Helper Guide Banner */
+    .admin-welcome-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 18px 22px;
+      margin-bottom: 22px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, rgba(0, 168, 232, 0.14) 0%, rgba(232, 193, 112, 0.1) 100%);
+      border: 1px solid rgba(232, 193, 112, 0.35);
+    }
+
+    .admin-welcome-banner h1 {
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: var(--gold-bright);
+    }
+
+    .admin-welcome-banner p {
+      font-size: 0.86rem;
+      color: var(--ink-muted);
+      margin-top: 2px;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .admin-sidebar {
+      position: sticky;
+      top: 92px;
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .admin-nav-btn {
+      width: 100%;
+      text-align: left;
+      padding: 13px 15px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+
+    .admin-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--ink);
+    }
+
+    .admin-nav-btn.active {
+      background: linear-gradient(135deg, #f5d78e 0%, #e2b553 100%);
+      color: #040d21;
+      box-shadow: 0 6px 18px rgba(232, 193, 112, 0.3);
+    }
+
+    .admin-nav-btn small {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      opacity: 0.82;
+    }
+
+    .admin-panel-card {
+      background: var(--bg-card-solid);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: clamp(18px, 3vw, 30px);
+      display: none;
+    }
+
+    .admin-panel-card.active {
+      display: block;
+    }
+
+    .admin-card-title {
+      font-size: 1.32rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: var(--gold-bright);
+    }
+
+    .admin-card-sub {
+      font-size: 0.88rem;
+      color: var(--ink-muted);
+      margin-bottom: 22px;
+      line-height: 1.45;
+    }
+
+    .field-hint {
+      font-size: 0.76rem;
+      color: var(--ink-muted);
+      line-height: 1.35;
+      margin-top: 2px;
+    }
+
+    /* Mobile-First Thumb-Friendly Upload Button & Live Preview */
+    .photo-upload-card {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 16px;
+      align-items: center;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(3, 9, 23, 0.65);
+      border: 1px dashed rgba(232, 193, 112, 0.45);
+    }
+
+    .photo-preview-thumb {
+      width: 120px;
+      height: 82px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #030917;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .mobile-file-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, #38bdf8 0%, #00a8e8 100%);
+      color: #030917;
+      font-weight: 800;
+      font-size: 0.86rem;
+      cursor: pointer;
+      width: fit-content;
+      transition: transform 0.2s;
+    }
+
+    .mobile-file-label:active {
+      transform: scale(0.97);
+    }
+
+    .mobile-file-label input[type="file"] {
+      display: none;
+    }
+
+    /* Filter Pills inside Admin Package List */
+    .admin-filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .admin-filter-pill {
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--ink-muted);
+      border: 1px solid transparent;
+    }
+
+    .admin-filter-pill.active {
+      background: rgba(232, 193, 112, 0.18);
+      color: var(--gold-bright);
+      border-color: var(--border-gold);
+    }
+
+    .admin-pkg-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .admin-pkg-item {
+      display: grid;
+      grid-template-columns: 100px 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(3, 9, 23, 0.65);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .admin-pkg-item img {
+      width: 100px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .admin-actions-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-sm {
+      padding: 9px 15px;
+      font-size: 0.82rem;
+      border-radius: 10px;
+    }
+
+    .btn-danger {
+      background: rgba(244, 63, 94, 0.16);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+    }
+
+    .btn-danger:hover {
+      background: rgba(244, 63, 94, 0.85);
+      color: #fff;
+    }
+
+    /* Checkboxes for "Mostrar também em..." */
+    .also-checkbox-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .also-check-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 14px;
+      border-radius: 10px;
+      background: rgba(3, 9, 23, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .also-check-pill input {
+      accent-color: var(--gold);
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Unified Fixed Bottom Action Bar (Single place for "Ver Site" & "Salvar Tudo") */
+    .mobile-sticky-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 250;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+      background: rgba(4, 13, 33, 0.96);
+      border-top: 1px solid var(--border-gold);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .mobile-sticky-bar .btn {
+      max-width: 240px;
+    }
+
+    .toast-bar {
+      position: fixed;
+      bottom: 82px;
+      right: 24px;
+      z-index: 300;
+      padding: 14px 22px;
+      border-radius: var(--radius-md);
+      background: #064e3b;
+      border: 1px solid #10b981;
+      color: #ecfdf5;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      transform: translateY(140%);
+      opacity: 0;
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .toast-bar.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 900px) {
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+      .admin-sidebar {
+        position: static;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 10px;
+      }
+      .admin-nav-btn {
+        padding: 11px 12px;
+        font-size: 0.82rem;
+      }
+      .admin-nav-btn small {
+        display: none;
+      }
+      .admin-pkg-item {
+        grid-template-columns: 84px 1fr;
+      }
+      .admin-actions-row {
+        grid-column: 1 / -1;
+        justify-content: flex-end;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .photo-upload-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+        justify-items: center;
+      }
+      .mobile-sticky-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 250;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+        background: rgba(4, 13, 33, 0.96);
+        border-top: 1px solid var(--border-gold);
+        backdrop-filter: blur(14px);
+      }
+      .toast-bar {
+        bottom: 82px;
+        left: 16px;
+        right: 16px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP ADMIN HEADER (Clean Logo Only — Never overlaps content and no duplicate buttons) -->
+  <header class="admin-top-header">
+    <div class="wrap header-inner">
+      <a href="index.html" class="brand-link">
+        <img src="assets/logo-emblem.png" class="brand-emblem-svg" alt="Bellustour" />
+        <div class="brand-wordmark">
+          <div class="brand-title">
+            <span class="bellus">BELLUS</span><span class="tour">TOUR</span>
+          </div>
+          <span class="brand-sub">PAINEL DE CONTROLE FÁCIL</span>
+        </div>
+      </a>
+    </div>
+  </header>
+
+  <main class="admin-shell">
+    <div class="wrap">
+      <!-- FRIENDLY WELCOME HELPER -->
+      <div class="admin-welcome-banner">
+        <div>
+          <h1>👋 Olá! Bem-vindo ao Painel da Bellustour</h1>
+          <p>Aqui você altera seus pacotes, fotos pelo celular e número de WhatsApp sem mexer em código. Basta escolher uma opção abaixo e tocar em <strong>Salvar Tudo</strong>.</p>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <!-- INTUITIVE SIDEBAR (4 Simple Tabs) -->
+        <aside class="admin-sidebar" aria-label="Menu do Administrador">
+          <button type="button" class="admin-nav-btn active" data-tab="tab-packages">
+            <span>🛳️</span>
+            <div>
+              <span>1. Meus Pacotes</span>
+              <small>Adicionar ou editar viagens</small>
+            </div>
+          </button>
+
+          <button type="button" class="admin-nav-btn" data-tab="tab-categories">
+            <span>🎠</span>
+            <div>
+              <span>2. Capas do Início (5)</span>
+              <small>Fotos que giram na 1ª tela</small>
+            </div>
+          </button>
+
+          <button type="button" class="admin-nav-btn" data-tab="tab-whatsapp">
+            <span>📲</span>
+            <div>
+              <span>3. Meu WhatsApp & Topo</span>
+              <small>Números, botão e logo</small>
+            </div>
+          </button>
+
+          <button type="button" class="admin-nav-btn" data-tab="tab-popup">
+            <span>💬</span>
+            <div>
+              <span>4. Perguntas & Desfazer</span>
+              <small>Texto do Matheus e voltar atrás</small>
+            </div>
+          </button>
+        </aside>
+
+        <!-- MAIN CONTENT PANELS -->
+        <div>
+          <!-- ================================================================
+               ABA 1: MEUS PACOTES DE VIAGENS (Most used on mobile!)
+               ================================================================ -->
+          <section class="admin-panel-card active" id="tab-packages">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px;">
+              <div>
+                <h2 class="admin-card-title" style="margin-bottom: 2px;">🛳️ Meus Pacotes de Viagens & Cruzeiros</h2>
+                <p class="admin-card-sub" style="margin-bottom: 0;">Estes são os pacotes que aparecem quando o cliente clica em uma categoria no site. Toque em <strong>+ Adicionar Nova Viagem</strong> ou em <strong>Editar</strong> em qualquer pacote abaixo.</p>
+              </div>
+              <button type="button" class="btn btn-gold" id="adm-new-pkg-btn">+ Adicionar Nova Viagem</button>
+            </div>
+
+            <!-- Visual Filter Pills for Admin List -->
+            <div class="admin-filter-pills" id="admin-pkg-filter-pills">
+              <button type="button" class="admin-filter-pill active" data-filter="all">Todos</button>
+              <button type="button" class="admin-filter-pill" data-filter="cruzeiros">🛳️ Cruzeiros</button>
+              <button type="button" class="admin-filter-pill" data-filter="nacionais">🇧🇷 Nacionais</button>
+              <button type="button" class="admin-filter-pill" data-filter="internacionais">🌍 Internacionais</button>
+              <button type="button" class="admin-filter-pill" data-filter="promocionais">🔥 Promocionais</button>
+              <button type="button" class="admin-filter-pill" data-filter="ultimas-vagas">⏳ Últimas Vagas</button>
+            </div>
+
+            <!-- Package Editor Form (Simple, Step-by-Step, Mobile-Friendly) -->
+            <div id="pkg-editor-box" style="display: none; margin-bottom: 26px; padding: clamp(16px, 3vw, 24px); border-radius: 18px; background: rgba(0, 168, 232, 0.08); border: 2px solid var(--gold);">
+              <h3 id="pkg-editor-heading" style="font-size: 1.15rem; font-weight: 800; color: var(--gold-bright); margin-bottom: 6px;">Editar Viagem</h3>
+              <p style="font-size: 0.82rem; color: var(--ink-muted); margin-bottom: 18px;">Preencha os dados da viagem abaixo e toque em <strong>Salvar esta Viagem</strong> no final do quadro.</p>
+              <input type="hidden" id="edit-pkg-id" />
+
+              <div class="quote-form">
+                <!-- PASSO 1: FOTO DA VIAGEM PELO CELULAR -->
+                <div class="form-group">
+                  <label>📸 1. Foto da Viagem</label>
+                  <div class="photo-upload-card">
+                    <img id="edit-pkg-preview" class="photo-preview-thumb" src="assets/logo.jpeg" alt="Prévia da foto" />
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                      <label class="mobile-file-label">
+                        <span>📱 Escolher Foto da Galeria do Celular</span>
+                        <input type="file" id="edit-pkg-file" accept="image/*" />
+                      </label>
+                      <span class="field-hint" id="edit-pkg-upload-status">Você pode pegar qualquer foto do seu celular (mesmo pesada). O painel otimiza sozinho!</span>
+                      <details style="font-size: 0.76rem; color: var(--ink-muted); margin-top: 2px;">
+                        <summary style="cursor: pointer; color: var(--gold-bright);">Opções avançadas: colar link de foto da internet</summary>
+                        <input type="text" id="edit-pkg-image" class="form-control" style="margin-top: 6px;" placeholder="https://..." />
+                      </details>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- PASSO 2: NOME E SUBTÍTULO -->
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="edit-pkg-title">✏️ 2. Título da Viagem</label>
+                    <input type="text" id="edit-pkg-title" class="form-control" placeholder="Ex: Cruzeiro Nordeste ou Resort Maragogi" />
+                    <span class="field-hint">O nome principal que chama atenção do cliente.</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-pkg-subtitle">🛳️ 3. Subtítulo (Navio, Cabine ou Hotel)</label>
+                    <input type="text" id="edit-pkg-subtitle" class="form-control" placeholder="Ex: MSC Seaview • Cabine com Varanda" />
+                    <span class="field-hint">Aparece em dourado logo abaixo do título.</span>
+                  </div>
+                </div>
+
+                <!-- PASSO 3: ONDE VAI APARECER -->
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="edit-pkg-category">📂 4. Em qual Categoria Principal ela entra?</label>
+                    <select id="edit-pkg-category" class="form-control">
+                      <option value="cruzeiros">🛳️ Cruzeiros</option>
+                      <option value="nacionais">🇧🇷 Viagens Nacionais</option>
+                      <option value="internacionais">🌍 Viagens Internacionais</option>
+                      <option value="promocionais">🔥 Pacotes Promocionais</option>
+                      <option value="ultimas-vagas">⏳ Últimas Ofertas / Últimas Vagas</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="edit-pkg-also">✨ 5. Quer repetir essa viagem em outra aba também?</label>
+                    <select id="edit-pkg-also" class="form-control">
+                      <option value="">Não, mostrar apenas na categoria principal</option>
+                      <option value="promocionais">Sim, mostrar também em 🔥 Pacotes Promocionais</option>
+                      <option value="ultimas-vagas">Sim, mostrar também em ⏳ Últimas Vagas</option>
+                      <option value="cruzeiros">Sim, mostrar também em 🛳️ Cruzeiros</option>
+                      <option value="nacionais">Sim, mostrar também em 🇧🇷 Viagens Nacionais</option>
+                      <option value="internacionais">Sim, mostrar também em 🌍 Viagens Internacionais</option>
+                    </select>
+                    <span class="field-hint">Dica: Ótimo para um Cruzeiro aparecer também na aba de Promoções!</span>
+                  </div>
+                </div>
+
+                <!-- PASSO 4: PREÇO -->
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="edit-pkg-price">💰 6. Valor Parcelado (em destaque)</label>
+                    <input type="text" id="edit-pkg-price" class="form-control" placeholder="Ex: 12x de R$ 389" />
+                    <span class="field-hint">O preço grande que aparece ao lado do botão de cotação.</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-pkg-total">💵 7. Texto pequeno abaixo do valor</label>
+                    <input type="text" id="edit-pkg-total" class="form-control" placeholder="Ex: ou R$ 4.668 por pessoa + taxas" />
+                    <span class="field-hint">Ex: valor à vista ou observação "por pessoa em cabine dupla".</span>
+                  </div>
+                </div>
+
+                <!-- PASSO 5: SAÍDA E DURAÇÃO -->
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="edit-pkg-port">📍 8. De onde sai? (Porto ou Aéreo)</label>
+                    <input type="text" id="edit-pkg-port" class="form-control" placeholder="Ex: Santos - SP ou Salvador - BA" />
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-pkg-duration">⏳ 9. Quantos dias dura?</label>
+                    <input type="text" id="edit-pkg-duration" class="form-control" placeholder="Ex: 7 / 8 dias ou 3 / 4 dias" />
+                  </div>
+                </div>
+
+                <!-- PASSO 6: ROTEIRO E ETIQUETA -->
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="edit-pkg-route">🗺️ 10. Quais cidades passa? (Roteiro)</label>
+                    <input type="text" id="edit-pkg-route" class="form-control" placeholder="Ex: Santos • Búzios • Salvador • Santos" />
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-pkg-badge">🏷️ 11. Etiqueta no canto da foto</label>
+                    <input type="text" id="edit-pkg-badge" class="form-control" placeholder="Ex: MAIS PROCURADO ou ÚLTIMAS 3 VAGAS" />
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="edit-pkg-ship">🏢 12. Nome da Companhia ou Hotel</label>
+                    <input type="text" id="edit-pkg-ship" class="form-control" placeholder="Ex: MSC Seaview ou Resort All Inclusive" />
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-pkg-urgency">🔥 13. Frase curta de destaque (Opcional)</label>
+                    <input type="text" id="edit-pkg-urgency" class="form-control" placeholder="Ex: Últimas 4 cabines nessa tarifa" />
+                  </div>
+                </div>
+
+                <input type="hidden" id="edit-pkg-highlights" value="" />
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.1);">
+                  <button type="button" class="btn btn-glass" id="pkg-cancel-btn">Cancelar</button>
+                  <button type="button" class="btn btn-gold" id="pkg-apply-btn">✓ Salvar esta Viagem</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-pkg-list" id="admin-pkg-list">
+              <!-- Package rows rendered by admin.js -->
+            </div>
+          </section>
+
+          <!-- ================================================================
+               ABA 2: CAPAS DO INÍCIO (5 CATEGORIAS DO CAROUSEL)
+               ================================================================ -->
+          <section class="admin-panel-card" id="tab-categories">
+            <h2 class="admin-card-title">🎠 As 5 Capas que Giram na Primeira Tela</h2>
+            <p class="admin-card-sub">Estes são os 5 grandes cartões da tela inicial (Cruzeiros, Nacionais, Internacionais, Promocionais e Últimas Vagas). Você pode trocar a foto de fundo pelo celular, o nome ou o preço inicial de cada um.</p>
+            <div class="admin-pkg-list" id="admin-cat-list"></div>
+          </section>
+
+          <!-- ================================================================
+               ABA 3: MEU WHATSAPP, BOTÃO DO TOPO & MARCA
+               ================================================================ -->
+          <section class="admin-panel-card" id="tab-whatsapp">
+            <h2 class="admin-card-title">📲 Meu WhatsApp & Topo do Site</h2>
+            <p class="admin-card-sub">Configure aqui o número do seu WhatsApp para onde vão todos os clientes do site, além do botão do canto superior direito.</p>
+
+            <div class="quote-form">
+              <div class="form-group" style="padding: 16px; border-radius: 14px; background: rgba(16, 185, 129, 0.09); border: 1px solid rgba(16, 185, 129, 0.4);">
+                <label for="adm-whatsapp" style="color: #34d399; font-size: 0.96rem;">📲 1. Seu WhatsApp Principal (Onde chegam as cotações dos pacotes)</label>
+                <input type="tel" id="adm-whatsapp" class="form-control" placeholder="Ex: 5511973886395" />
+                <span class="field-hint">Digite o código do país (55) + DDD + Número. Ex: <code>5511973886395</code>.</span>
+              </div>
+
+              <div class="form-row-2" style="padding: 16px; border-radius: 14px; background: rgba(232, 193, 112, 0.07); border: 1px solid rgba(232, 193, 112, 0.3);">
+                <div class="form-group">
+                  <label for="adm-header-btn-text" style="color: var(--gold-bright);">🔘 2. Nome do Botão no Topo Direito do Site</label>
+                  <input type="text" id="adm-header-btn-text" class="form-control" placeholder="Ex: Fale Conosco" />
+                  <span class="field-hint">Texto escrito no botão dourado lá no alto do site.</span>
+                </div>
+                <div class="form-group">
+                  <label for="adm-header-btn-wa" style="color: var(--gold-bright);">📞 3. WhatsApp desse Botão do Topo</label>
+                  <input type="tel" id="adm-header-btn-wa" class="form-control" placeholder="Ex: 5511973886395" />
+                  <span class="field-hint">Se deixar igual ao principal, ambos caem no mesmo WhatsApp.</span>
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="adm-logo-mode">🎨 4. Formato da Logo no Topo</label>
+                  <select id="adm-logo-mode" class="form-control">
+                    <option value="refined">Emblema do Navio + Texto BELLUSTOUR ao lado (Padrão)</option>
+                    <option value="original">Logo Completa em Bloco</option>
+                    <option value="custom">Outra Imagem de Logo enviada do celular</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="adm-logo-upload">📤 Trocar Imagem da Logo (Opcional)</label>
+                  <input type="file" id="adm-logo-upload" accept="image/*" class="form-control" />
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="adm-hero-badge">Frase Pequena Acima do Título Inicial</label>
+                  <input type="text" id="adm-hero-badge" class="form-control" placeholder="Ex: BELLUSTOUR • CURADORIA POR MATHEUS" />
+                </div>
+                <div class="form-group">
+                  <label for="adm-hero-title">Título Principal da Primeira Tela</label>
+                  <input type="text" id="adm-hero-title" class="form-control" placeholder="Ex: Escolha sua próxima experiência" />
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="adm-brand-name">Nome da Agência</label>
+                  <input type="text" id="adm-brand-name" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label for="adm-tagline">Texto abaixo do nome Bellustour</label>
+                  <input type="text" id="adm-tagline" class="form-control" />
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="adm-email">Seu E-mail de Contato</label>
+                  <input type="email" id="adm-email" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label for="adm-cnpj">CNPJ da Agência</label>
+                  <input type="text" id="adm-cnpj" class="form-control" />
+                </div>
+              </div>
+
+              <input type="hidden" id="adm-address" />
+            </div>
+          </section>
+
+          <!-- ================================================================
+               ABA 4: PERGUNTAS DO MATHEUS & BOTÃO DESFAZER (ROLLBACK)
+               ================================================================ -->
+          <section class="admin-panel-card" id="tab-popup">
+            <!-- SAFETY UNDO / ROLLBACK BOX AT THE TOP OF TAB 4 -->
+            <div style="padding: 18px 20px; border-radius: 16px; background: rgba(232, 193, 112, 0.1); border: 1px solid var(--border-gold); margin-bottom: 26px;">
+              <h3 style="font-size: 1.08rem; font-weight: 800; color: var(--gold-bright); margin-bottom: 4px;">⏪ Errou alguma alteração? Desfaça com 1 toque!</h3>
+              <p style="font-size: 0.84rem; color: var(--ink-muted); margin-bottom: 14px;">
+                Sempre que você salva uma mudança, o painel guarda uma cópia de como o site estava antes. Se você apagou ou alterou algo sem querer, basta tocar no botão abaixo:
+              </p>
+              <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+                <button type="button" class="btn btn-gold" id="adm-rollback-btn">⏪ Restaurar Última Modificação</button>
+                <button type="button" class="btn btn-glass" id="adm-export-json-btn">⬇️ Salvar Cópia de Segurança no Aparelho</button>
+              </div>
+              <p id="rollback-status-text" style="margin-top: 10px; font-size: 0.78rem; color: #34d399;"></p>
+            </div>
+
+            <h2 class="admin-card-title">💬 Mensagem do Matheus na Janela de Cotação</h2>
+            <p class="admin-card-sub">Este é o texto de recepção que aparece para o cliente quando ele toca em <strong>"Faça sua cotação"</strong> em qualquer pacote:</p>
+
+            <div class="quote-form">
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="adm-pop-title">Saudação Inicial</label>
+                  <input type="text" id="adm-pop-title" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label for="adm-pop-intro">Frase de Apresentação</label>
+                  <input type="text" id="adm-pop-intro" class="form-control" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="adm-pop-pitch">Mensagem de Boas-Vindas</label>
+                <textarea id="adm-pop-pitch" rows="2" class="form-control"></textarea>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="adm-pop-santos">Aviso sobre embarque em Santos</label>
+                  <input type="text" id="adm-pop-santos" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label for="adm-pop-other">Aviso sobre outros portos</label>
+                  <input type="text" id="adm-pop-other" class="form-control" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="adm-pop-ports">📍 Opções de Portos para o cliente escolher (1 por linha)</label>
+                <textarea id="adm-pop-ports" rows="5" class="form-control"></textarea>
+                <span class="field-hint">Coloque um porto em cada linha.</span>
+              </div>
+
+              <div class="form-group">
+                <label for="adm-pop-btn">Texto do Botão que envia para o WhatsApp</label>
+                <input type="text" id="adm-pop-btn" class="form-control" />
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- SINGLE UNIFIED BOTTOM BAR FOR ALL DEVICES -->
+  <div class="mobile-sticky-bar">
+    <a href="index.html" class="btn btn-glass" style="flex: 1; padding: 12px;">👁️ Ver Site</a>
+    <button type="button" class="btn btn-gold" id="admin-save-all-btn" style="flex: 1.5; padding: 12px;">💾 Salvar Tudo</button>
+  </div>
+
+  <div class="toast-bar" id="admin-toast">✓ Alterações salvas com sucesso!</div>
+
+  <script src="js/default-config.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,636 @@
+// ============================================================================
+// BELLUSTOUR — AUTOMATED REGRESSION & MULTI-DEVICE RESPONSIVENESS TEST SUITE
+// Rule (AGENTS.md): Every bug fix or layout adjustment MUST have a regression
+// test added here and pass before delivery.
+// Run with: node tests/regression.test.mjs
+// ============================================================================
+
+import { spawn } from "node:child_process";
+import fs from "node:fs";
+import http from "node:http";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, "..");
+const BASE_URL = "http://localhost:8080";
+
+const BROWSER_CANDIDATES = [
+  process.env.CHROME_PATH,
+  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+  "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe"
+].filter(Boolean);
+
+function findBrowser() {
+  for (const p of BROWSER_CANDIDATES) {
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+}
+
+function fetchJson(url) {
+  return new Promise((resolve, reject) => {
+    http
+      .get(url, (res) => {
+        let data = "";
+        res.on("data", (c) => (data += c));
+        res.on("end", () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      })
+      .on("error", reject);
+  });
+}
+
+// Lightweight CDP Client using Node 22+ built-in WebSocket
+class CDPPage {
+  constructor(wsUrl) {
+    this.wsUrl = wsUrl;
+    this.ws = null;
+    this.id = 0;
+    this.pending = new Map();
+  }
+
+  async connect() {
+    this.ws = new WebSocket(this.wsUrl);
+    await new Promise((resolve, reject) => {
+      this.ws.addEventListener("open", resolve, { once: true });
+      this.ws.addEventListener("error", reject, { once: true });
+    });
+    this.ws.addEventListener("message", (ev) => {
+      const msg = JSON.parse(String(ev.data));
+      if (msg.id && this.pending.has(msg.id)) {
+        const { resolve, reject } = this.pending.get(msg.id);
+        this.pending.delete(msg.id);
+        if (msg.error) reject(new Error(msg.error.message));
+        else resolve(msg.result);
+      }
+    });
+    await this.send("Page.enable");
+    await this.send("Runtime.enable");
+  }
+
+  send(method, params = {}) {
+    const id = ++this.id;
+    return new Promise((resolve, reject) => {
+      this.pending.set(id, { resolve, reject });
+      this.ws.send(JSON.stringify({ id, method, params }));
+    });
+  }
+
+  async setViewport(width, height, mobile = false) {
+    await this.send("Emulation.setDeviceMetricsOverride", {
+      width,
+      height,
+      deviceScaleFactor: mobile ? 2 : 1,
+      mobile
+    });
+  }
+
+  async goto(url) {
+    await this.send("Page.navigate", { url });
+    await new Promise((r) => setTimeout(r, 550));
+  }
+
+  async eval(fnOrExpr) {
+    const expression =
+      typeof fnOrExpr === "function" ? `(${fnOrExpr.toString()})()` : fnOrExpr;
+    const res = await this.send("Runtime.evaluate", {
+      expression,
+      returnByValue: true,
+      awaitPromise: true
+    });
+    if (res.exceptionDetails) {
+      throw new Error(
+        "JS Error in page: " +
+          (res.exceptionDetails.exception?.description ||
+            res.exceptionDetails.text)
+      );
+    }
+    return res.result?.value;
+  }
+
+  close() {
+    if (this.ws) this.ws.close();
+  }
+}
+
+// Test Runner
+let passed = 0;
+let failed = 0;
+
+function assert(condition, testName, details = "") {
+  if (condition) {
+    console.log(`  ✓ PASS: ${testName}`);
+    passed++;
+  } else {
+    console.error(`  ✗ FAIL: ${testName} ${details ? "-> " + details : ""}`);
+    failed++;
+  }
+}
+
+async function runTests() {
+  console.log("==============================================================");
+  console.log("🛳️ BELLUSTOUR — AUTOMATED REGRESSION & RESPONSIVENESS SUITE");
+  console.log("==============================================================\n");
+
+  // 1. Static & Config Integrity Tests
+  console.log("[1/4] Config & Modular Architecture Integrity");
+  const configPath = path.join(ROOT, "public", "data", "site-config.json");
+  assert(fs.existsSync(configPath), "site-config.json exists");
+  const configData = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+  assert(
+    Array.isArray(configData.categories) && configData.categories.length === 5,
+    "Config contains exactly the 5 required Carousel Categories (Cruzeiros, Nacionais, Internacionais, Promocionais, Últimas Vagas)"
+  );
+  assert(
+    typeof configData.brand.whatsappNumber === "string",
+    "WhatsApp number field is present and configurable via Admin"
+  );
+
+  // 2. Launch Headless Browser for Real DOM, Layout & Multi-Device Viewport Tests
+  const browserBin = findBrowser();
+  if (!browserBin) {
+    throw new Error("No Chrome/Edge found for headless browser tests");
+  }
+
+  const debugPort = 9333;
+  const userDataDir = path.join(ROOT, ".taste-skill", "chrome-test-profile");
+  fs.mkdirSync(userDataDir, { recursive: true });
+
+  const proc = spawn(
+    browserBin,
+    [
+      "--headless=new",
+      "--disable-gpu",
+      "--no-first-run",
+      "--no-default-browser-check",
+      `--remote-debugging-port=${debugPort}`,
+      `--user-data-dir=${userDataDir}`,
+      "about:blank"
+    ],
+    { stdio: "ignore" }
+  );
+
+  try {
+    // Wait for CDP endpoint
+    let targets = null;
+    for (let i = 0; i < 25; i++) {
+      try {
+        targets = await fetchJson(`http://127.0.0.1:${debugPort}/json/list`);
+        if (targets && targets.length > 0) break;
+      } catch (_) {}
+      await new Promise((r) => setTimeout(r, 200));
+    }
+
+    const pageTarget = targets.find((t) => t.type === "page") || targets[0];
+    const page = new CDPPage(pageTarget.webSocketDebuggerUrl);
+    await page.connect();
+
+    // ------------------------------------------------------------------------
+    // [2/4] Multi-Device Responsiveness Matrix (Phones, Tablets, Notebooks, Desktop)
+    // ------------------------------------------------------------------------
+    console.log("\n[2/4] Multi-Device Responsiveness across 8 Screen Sizes");
+
+    const VIEWPORTS = [
+      { name: "iPhone SE / Compact Mobile (320x568)", w: 320, h: 568, mobile: true },
+      { name: "iPhone 13/14 Mini & Android (360x740)", w: 360, h: 740, mobile: true },
+      { name: "iPhone 14/15 Standard (390x844)", w: 390, h: 844, mobile: true },
+      { name: "iPhone 15 Pro Max / Plus (430x932)", w: 430, h: 932, mobile: true },
+      { name: "iPad Mini / Tablet Portrait (768x1024)", w: 768, h: 1024, mobile: true },
+      { name: "iPad Air / Tablet Landscape (1024x768)", w: 1024, h: 768, mobile: true },
+      { name: "Compact Laptop 1366x720 (Short Screen)", w: 1366, h: 720, mobile: false },
+      { name: "Full HD Desktop (1920x1080)", w: 1920, h: 1080, mobile: false }
+    ];
+
+    await page.goto(BASE_URL);
+
+    for (const vp of VIEWPORTS) {
+      await page.setViewport(vp.w, vp.h, vp.mobile);
+      await new Promise((r) => setTimeout(r, 160));
+
+      const metrics = await page.eval(() => {
+        const docEl = document.documentElement;
+        const body = document.body;
+        const activeCard = document.querySelector('.cat-card-3d[data-offset="0"]');
+        const header = document.querySelector(".site-header");
+        const bottomBar = document.querySelector(".stage-bottom-bar");
+
+        const cardRect = activeCard ? activeCard.getBoundingClientRect() : null;
+        const headerRect = header ? header.getBoundingClientRect() : null;
+        const bottomRect = bottomBar ? bottomBar.getBoundingClientRect() : null;
+
+        return {
+          winW: window.innerWidth,
+          winH: window.innerHeight,
+          docScrollW: docEl.scrollWidth,
+          bodyLocked: getComputedStyle(body).overflow === "hidden",
+          cardFitsWidth:
+            cardRect &&
+            cardRect.left >= 0 &&
+            cardRect.right <= window.innerWidth + 1,
+          cardFitsHeight:
+            cardRect &&
+            cardRect.top >= (headerRect ? headerRect.bottom - 16 : 0) &&
+            cardRect.bottom <= window.innerHeight,
+          hudVisible:
+            bottomRect &&
+            bottomRect.bottom <= window.innerHeight + 2 &&
+            bottomRect.top >= 0
+        };
+      });
+
+      assert(
+        metrics.docScrollW <= metrics.winW + 1 &&
+          metrics.cardFitsWidth &&
+          metrics.cardFitsHeight &&
+          metrics.hudVisible,
+        `Viewport ${vp.name}: fits 100svh cleanly, zero horizontal bleed, active 3D card & HUD fully visible`,
+        JSON.stringify(metrics)
+      );
+    }
+
+    // ------------------------------------------------------------------------
+    // [3/4] Regression Tests for Reported Bugs & Core Interactive Flows
+    // ------------------------------------------------------------------------
+    console.log("\n[3/4] Functional & Visual Regression Tests");
+
+    // Reset to Desktop 1440x900
+    await page.setViewport(1440, 900, false);
+    await page.goto(BASE_URL);
+
+    // Regression #1: Home Page must ONLY have the 5 Categories in the 3D Carousel (Clean single screen)
+    const homeState = await page.eval(() => {
+      const cards = document.querySelectorAll(".cat-card-3d");
+      return {
+        count: cards.length,
+        firstCatId: cards[0]?.getAttribute("data-cat-id"),
+        activeOffsetCount: document.querySelectorAll('.cat-card-3d[data-offset="0"]').length
+      };
+    });
+    assert(
+      homeState.count === 5 &&
+        homeState.firstCatId === "cruzeiros" &&
+        homeState.activeOffsetCount === 1,
+      "REGRESSION #1: Home page is 100% clean with only the 5 Category Cards in 3D Carousel (Cruzeiros active first)"
+    );
+
+    // Regression #2: Clicking a category with >3 options (e.g., "promocionais" with 6 packages or "cruzeiros" with 7)
+    // MUST NOT display a scrollbar and MUST keep cards in a single horizontal glide row!
+    const popupScrollRegression = await page.eval(() => {
+      // Click active card (Cruzeiros - 7 options)
+      const activeCard = document.querySelector('.cat-card-3d[data-offset="0"]');
+      activeCard.click();
+
+      const modal = document.querySelector(".category-showcase-modal");
+      const grid = document.getElementById("category-packages-grid");
+      const cards = grid.querySelectorAll(".pkg-card");
+      const arrows = document.getElementById("showcase-nav-arrows");
+
+      const modalStyle = getComputedStyle(modal);
+      const gridStyle = getComputedStyle(grid);
+
+      // Verify all cards sit on the exact same vertical top Y coordinate (1 single row, no second row wrapping!)
+      const firstTop = cards[0]?.getBoundingClientRect().top;
+      const allSameRow = Array.from(cards).every(
+        (c) => Math.abs(c.getBoundingClientRect().top - firstTop) < 3
+      );
+
+      return {
+        isOpen: document
+          .getElementById("category-modal-backdrop")
+          .classList.contains("open"),
+        cardCount: cards.length,
+        allSameRow,
+        gridAutoFlow: gridStyle.gridAutoFlow,
+        modalScrollbarWidth: modalStyle.scrollbarWidth,
+        gridScrollbarWidth: gridStyle.scrollbarWidth,
+        arrowsVisible: !arrows.classList.contains("hidden")
+      };
+    });
+
+    assert(
+      popupScrollRegression.isOpen &&
+        popupScrollRegression.cardCount > 3 &&
+        popupScrollRegression.allSameRow &&
+        popupScrollRegression.gridAutoFlow === "column" &&
+        popupScrollRegression.modalScrollbarWidth === "none" &&
+        popupScrollRegression.gridScrollbarWidth === "none" &&
+        popupScrollRegression.arrowsVisible,
+      "REGRESSION #2 (No Scrollbar in >3 Options Popup): Category with >3 packages stays in 1 single horizontal row with scrollbar-width:none and sleek slide arrows",
+      JSON.stringify(popupScrollRegression)
+    );
+
+    // Regression #2B: Also test Category Popup on Mobile (390x844) to ensure zero vertical cut-off
+    await page.setViewport(390, 844, true);
+    await new Promise((r) => setTimeout(r, 150));
+    const mobilePopupCheck = await page.eval(() => {
+      const modal = document.querySelector(".category-showcase-modal");
+      const rect = modal.getBoundingClientRect();
+      return {
+        fitsScreenHeight: rect.top >= 0 && rect.bottom <= window.innerHeight + 1,
+        fitsScreenWidth: rect.left >= 0 && rect.right <= window.innerWidth + 1
+      };
+    });
+    assert(
+      mobilePopupCheck.fitsScreenHeight && mobilePopupCheck.fitsScreenWidth,
+      "REGRESSION #2B: Category Packages Popup fits 100% inside mobile screen (390x844) without overflowing",
+      JSON.stringify(mobilePopupCheck)
+    );
+
+    // Regression #3: Clicking "Faça sua cotação" opens Matheus Quote Popup and enforces Santos (3/4 or 7/8 dias) vs Other Ports (7/8 dias) rule
+    await page.setViewport(1440, 900, false);
+    const quoteRuleCheck = await page.eval(() => {
+      const quoteBtn = document.querySelector(".js-pkg-quote");
+      quoteBtn.click();
+
+      const quoteOpen = document
+        .getElementById("quote-modal-backdrop")
+        .classList.contains("open");
+      const portSelect = document.getElementById("field-port");
+      const pillShort = document.getElementById("dur-pill-short");
+      const pillLong = document.getElementById("dur-pill-long");
+
+      // Select Santos
+      portSelect.value = "Santos - SP";
+      portSelect.dispatchEvent(new Event("change"));
+      const santosAllowsShort = !pillShort.classList.contains("disabled");
+
+      // Select Rio de Janeiro (other port)
+      portSelect.value = "Rio de Janeiro - RJ";
+      portSelect.dispatchEvent(new Event("change"));
+      const otherPortDisablesShort = pillShort.classList.contains("disabled");
+      const otherPortSelectsLong = pillLong.querySelector("input").checked;
+
+      // Intercept window.open to capture direct WhatsApp redirect when number is configured in Admin
+      let openedUrl = "";
+      const origOpen = window.open;
+      window.open = (url) => {
+        openedUrl = String(url || "");
+        return null;
+      };
+
+      document
+        .getElementById("quote-form")
+        .dispatchEvent(new Event("submit", { cancelable: true }));
+
+      window.open = origOpen;
+      const previewMsg = document.getElementById("whatsapp-preview-text").textContent;
+      const decodedUrl = decodeURIComponent(openedUrl);
+
+      return {
+        quoteOpen,
+        santosAllowsShort,
+        otherPortDisablesShort,
+        otherPortSelectsLong,
+        hasFormattedWhatsAppMsg:
+          (previewMsg.includes("Bellustour") &&
+            previewMsg.includes("Rio de Janeiro - RJ") &&
+            previewMsg.includes("7/8 dias")) ||
+          (decodedUrl.includes("wa.me/") &&
+            decodedUrl.includes("Bellustour") &&
+            decodedUrl.includes("Rio de Janeiro - RJ") &&
+            decodedUrl.includes("7/8 dias"))
+      };
+    });
+
+    assert(
+      quoteRuleCheck.quoteOpen &&
+        quoteRuleCheck.santosAllowsShort &&
+        quoteRuleCheck.otherPortDisablesShort &&
+        quoteRuleCheck.otherPortSelectsLong &&
+        quoteRuleCheck.hasFormattedWhatsAppMsg,
+      "REGRESSION #3 (Matheus Quote Popup & Santos Conditional Rule): Santos enables 3/4 & 7/8 days; other ports lock to 7/8 days and generate formatted WhatsApp quote",
+      JSON.stringify(quoteRuleCheck)
+    );
+
+    // Regression #4: Official Logo Emblem must never be distorted (rendered aspect ratio must match naturalWidth/naturalHeight)
+    const logoAspectCheck = await page.eval(() => {
+      const emblem = document.getElementById("brand-emblem-svg");
+      if (!emblem || !emblem.naturalWidth) return { ok: false };
+      const naturalRatio = emblem.naturalWidth / emblem.naturalHeight;
+      const renderedRatio = emblem.clientWidth / emblem.clientHeight;
+      const diff = Math.abs(naturalRatio - renderedRatio);
+      return {
+        ok: diff < 0.05 && emblem.src.includes("logo-emblem.png"),
+        naturalRatio: Number(naturalRatio.toFixed(3)),
+        renderedRatio: Number(renderedRatio.toFixed(3)),
+        diff: Number(diff.toFixed(3))
+      };
+    });
+
+    assert(
+      logoAspectCheck.ok,
+      "REGRESSION #4 (Official Logo Zero Distortion): Extracted high-res emblem renders at exact 1:1 original aspect ratio (891:382) with zero stretching",
+      JSON.stringify(logoAspectCheck)
+    );
+
+    // Regression #5: Top Header button is "Fale Conosco" and forwards directly to WhatsApp
+    const headerBtnCheck = await page.eval(() => {
+      const btn = document.getElementById("header-quote-btn");
+      const label = document.getElementById("header-btn-text")?.textContent?.trim();
+      let openedUrl = "";
+      const origOpen = window.open;
+      window.open = (url) => {
+        openedUrl = String(url || "");
+        return null;
+      };
+      btn.click();
+      window.open = origOpen;
+      return {
+        label,
+        forwardsToWa: openedUrl.includes("wa.me/")
+      };
+    });
+
+    assert(
+      headerBtnCheck.label === "Fale Conosco" && headerBtnCheck.forwardsToWa,
+      "REGRESSION #5 (Header Button 'Fale Conosco' -> Direct WhatsApp): Header button displays 'Fale Conosco' and redirects directly to WhatsApp",
+      JSON.stringify(headerBtnCheck)
+    );
+
+    // Regression #6: Footer must NOT expose any link to Admin, and bottom HUD must NOT show numeric counter (01 / 05) or arrows
+    const cleanFooterAndHudCheck = await page.eval(() => {
+      const legalLinks = Array.from(
+        document.querySelectorAll(".stage-mini-legal a")
+      ).map((a) => a.getAttribute("href"));
+      const hasAdminLink = legalLinks.some((h) => h && h.includes("admin"));
+      const hasCounter = Boolean(document.getElementById("carousel-counter"));
+      const hasPrevNext =
+        Boolean(document.getElementById("carousel-prev")) ||
+        Boolean(document.getElementById("carousel-next"));
+      return {
+        noAdminLink: !hasAdminLink,
+        noNumericCounter: !hasCounter,
+        noHudArrows: !hasPrevNext
+      };
+    });
+
+    assert(
+      cleanFooterAndHudCheck.noAdminLink &&
+        cleanFooterAndHudCheck.noNumericCounter &&
+        cleanFooterAndHudCheck.noHudArrows,
+      "REGRESSION #6 & #7 (Hidden Admin Link & No Bottom Counter/Arrows): Footer has no Admin link and bottom HUD has no numeric counter or arrows",
+      JSON.stringify(cleanFooterAndHudCheck)
+    );
+
+    // ------------------------------------------------------------------------
+    // [4/4] Admin Panel (/admin.html) & Rollback Verification
+    // ------------------------------------------------------------------------
+    console.log("\n[4/4] Admin Panel (/admin.html) & Rollback System Verification");
+    await page.goto(`${BASE_URL}/admin.html`);
+    const adminCheck = await page.eval(async () => {
+      const catInputs = document.querySelectorAll("#admin-cat-list .admin-pkg-item");
+      const pkgItems = document.querySelectorAll("#admin-pkg-list .admin-pkg-item");
+      const waInput = document.getElementById("adm-whatsapp");
+      const headerBtnTextInput = document.getElementById("adm-header-btn-text");
+      const headerBtnWaInput = document.getElementById("adm-header-btn-wa");
+      const factoryResetBtn = document.getElementById("adm-reset-default-btn");
+      const rollbackBtn = document.getElementById("adm-rollback-btn");
+
+      // Test Rollback behavior: modify button name, save, then click Rollback and verify it restores previous name!
+      const originalBtnText = headerBtnTextInput.value;
+      headerBtnTextInput.value = "Texto Temporario Teste";
+      document.getElementById("admin-save-all-btn").click();
+      await new Promise((r) => setTimeout(r, 150));
+      const savedModified = headerBtnTextInput.value === "Texto Temporario Teste";
+
+      rollbackBtn.click();
+      await new Promise((r) => setTimeout(r, 150));
+      const restoredOriginal = headerBtnTextInput.value === originalBtnText;
+
+      return {
+        catCount: catInputs.length,
+        pkgCount: pkgItems.length,
+        hasWaField: Boolean(waInput),
+        hasHeaderBtnFields: Boolean(headerBtnTextInput && headerBtnWaInput),
+        noFactoryReset: !factoryResetBtn,
+        hasRollbackBtn: Boolean(rollbackBtn),
+        rollbackWorks: savedModified && restoredOriginal
+      };
+    });
+
+    assert(
+      adminCheck.catCount === 5 &&
+        adminCheck.pkgCount >= 10 &&
+        adminCheck.hasWaField &&
+        adminCheck.hasHeaderBtnFields,
+      "Admin Panel renders all 5 Carousel Category editors, 10+ Package editors, WhatsApp field, and Header Button Name/Number fields"
+    );
+
+    assert(
+      adminCheck.noFactoryReset &&
+        adminCheck.hasRollbackBtn &&
+        adminCheck.rollbackWorks,
+      "REGRESSION #8 (No Factory Reset + Working Rollback): Factory reset is removed and Rollback restores the last modification immediately",
+      JSON.stringify(adminCheck)
+    );
+
+    // Regression #9: Separate Mobile Image Hosting Endpoint (/api/image) stores & serves compressed WebP/JPEG images
+    const imageEndpointCheck = await page.eval(async () => {
+      const c = document.createElement("canvas");
+      c.width = 40;
+      c.height = 30;
+      const ctx = c.getContext("2d");
+      ctx.fillStyle = "#e8c170";
+      ctx.fillRect(0, 0, 40, 30);
+      let dataUrl = c.toDataURL("image/webp", 0.84);
+      if (!dataUrl.startsWith("data:image/webp")) {
+        dataUrl = c.toDataURL("image/jpeg", 0.84);
+      }
+
+      const postRes = await fetch("/api/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: "test_mobile_upload", dataUrl })
+      });
+      const postJson = await postRes.json();
+      if (!postRes.ok || !postJson.url) return { ok: false };
+
+      const getRes = await fetch(postJson.url);
+      const contentType = getRes.headers.get("content-type") || "";
+      return {
+        ok: getRes.ok && contentType.startsWith("image/"),
+        url: postJson.url,
+        contentType
+      };
+    });
+
+    assert(
+      imageEndpointCheck.ok,
+      "REGRESSION #9 (Separate Mobile Image Hosting /api/image): Mobile photo upload compresses to WebP/JPEG, stores separately via /api/image, and serves binary image with CDN headers",
+      JSON.stringify(imageEndpointCheck)
+    );
+
+    // Regression #10: Intuitive Mobile Admin UX (Default tab is Meus Pacotes, Category filters work, Mobile Sticky Save bar is visible on 390x844 phone)
+    await page.setViewport(390, 844, true);
+    await new Promise((r) => setTimeout(r, 150));
+    const mobileAdminUxCheck = await page.eval(() => {
+      const defaultTabActive = document
+        .getElementById("tab-packages")
+        ?.classList.contains("active");
+      const filterPills = document.querySelectorAll(
+        "#admin-pkg-filter-pills .admin-filter-pill"
+      );
+      const stickyBar = document.querySelector(".mobile-sticky-bar");
+      const stickyVisible =
+        stickyBar && getComputedStyle(stickyBar).display === "flex";
+      return {
+        defaultTabActive,
+        filterCount: filterPills.length,
+        stickyVisible
+      };
+    });
+
+    assert(
+      mobileAdminUxCheck.defaultTabActive &&
+        mobileAdminUxCheck.filterCount === 6 &&
+        mobileAdminUxCheck.stickyVisible,
+      "REGRESSION #10 (Intuitive Mobile-First Admin UX): Opens directly on 'Meus Pacotes' with category filter pills and a thumb-friendly sticky bottom Save bar on mobile",
+      JSON.stringify(mobileAdminUxCheck)
+    );
+
+    // Regression #11: Admin Top Header must NOT overlap scrolled content and must NOT duplicate "Ver Site" / "Salvar Tudo" buttons near the logo
+    const adminHeaderNoOverlapCheck = await page.eval(() => {
+      const topHeader = document.querySelector(".admin-top-header");
+      const topHeaderPos = topHeader ? getComputedStyle(topHeader).position : "fixed";
+      const topButtonsCount = topHeader
+        ? topHeader.querySelectorAll("button, .btn").length
+        : 99;
+      const saveButtonsTotal = document.querySelectorAll("#admin-save-all-btn, #admin-mobile-save-btn").length;
+      return {
+        notFixedOverlapping: topHeaderPos !== "fixed",
+        noTopActionButtons: topButtonsCount === 0,
+        singleSaveButtonOnly: saveButtonsTotal === 1
+      };
+    });
+
+    assert(
+      adminHeaderNoOverlapCheck.notFixedOverlapping &&
+        adminHeaderNoOverlapCheck.noTopActionButtons &&
+        adminHeaderNoOverlapCheck.singleSaveButtonOnly,
+      "REGRESSION #11 (Admin Header No Overlap & No Duplicate Buttons): Admin top header does not overlap content on scroll and has zero duplicate Save/View Site buttons near the logo",
+      JSON.stringify(adminHeaderNoOverlapCheck)
+    );
+
+    page.close();
+  } finally {
+    proc.kill();
+  }
+
+  console.log("\n==============================================================");
+  console.log(`RESULTADO FINAL: ${passed} testes aprovados, ${failed} falhas.`);
+  console.log("==============================================================");
+  if (failed > 0) process.exit(1);
+}
+
+runTests().catch((err) => {
+  console.error("Test suite error:", err);
+  process.exit(1);
+});

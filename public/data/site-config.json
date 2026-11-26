@@ -1,0 +1,294 @@
+{
+  "brand": {
+    "name": "Bellustour",
+    "specialistName": "Matheus",
+    "tagline": "VIAGENS • CRUZEIROS • EXPERIÊNCIAS",
+    "heroBadge": "BELLUSTOUR",
+    "heroTitle": "Escolha sua próxima experiência",
+    "logoMode": "refined",
+    "logoUrl": "assets/logo.jpeg",
+    "whatsappNumber": "+5511973886395",
+    "headerButtonText": "Fale Conosco",
+    "headerButtonWhatsapp": "+5511973886395",
+    "instagramUrl": "https://instagram.com/",
+    "email": "contato@bellustour.com.br",
+    "cnpj": "00.000.000/0001-00",
+    "address": "Atendimento Digital em Todo o Brasil • Especialista em Cruzeiros",
+    "adminPin": "1234"
+  },
+  "popup": {
+    "welcomeTitle": "Olá! Seja muito bem-vindo(a)!",
+    "welcomeIntro": "Aqui é o Matheus, seu especialista em cruzeiros 😎✨",
+    "welcomePitch": "Vou te ajudar a encontrar a melhor viagem com o melhor preço — aquela experiência perfeita que você merece! 🛳️🌅",
+    "welcomePrompt": "Para eu te enviar as melhores opções, me conta rapidinho:",
+    "welcomeFooter": "Assim já te mando as melhores ofertas disponíveis pra você hoje!",
+    "buttonText": "Cotação",
+    "ports": [
+      "Santos - SP",
+      "Rio de Janeiro - RJ",
+      "Salvador - BA",
+      "Maceió - AL",
+      "Itajaí - SC",
+      "Porto Internacional / Aéreo Incluso",
+      "Outro porto / Preciso de orientação"
+    ],
+    "passengersOptions": [
+      "1 pessoa (Individual)",
+      "2 pessoas (Casal / Duplo)",
+      "3 pessoas (Triplo)",
+      "4 pessoas (Família / Quádruplo)",
+      "5 ou mais pessoas (Grupo)"
+    ],
+    "adultsOptions": [
+      "Sim, todos são adultos (+18)",
+      "Não, há crianças ou adolescentes"
+    ],
+    "months": [
+      "Dezembro",
+      "Janeiro",
+      "Fevereiro (Carnaval / Verão)",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho (Férias)",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Data flexível (Quero o melhor preço)"
+    ],
+    "santosRuleText": "👉 Saindo de Santos: temos opções de 3/4 dias ou 7/8 dias",
+    "otherPortsRuleText": "👉 Outros portos: roteiros de 7/8 dias"
+  },
+  "categories": [
+    {
+      "id": "cruzeiros",
+      "name": "Cruzeiros",
+      "shortName": "Cruzeiros",
+      "badge": "01 • FOCO PRINCIPAL",
+      "subtitle": "Saídas de Santos (3/4 ou 7/8 dias), Rio, Nordeste, Prata e Caribe",
+      "priceFrom": "A partir de 12x R$ 199",
+      "image": "https://images.unsplash.com/photo-1548574505-5e239809ee19?auto=format&fit=crop&w=1600&q=85"
+    },
+    {
+      "id": "nacionais",
+      "name": "Viagens Nacionais",
+      "shortName": "Nacionais",
+      "badge": "02 • BRASIL",
+      "subtitle": "Resorts All-Inclusive no Nordeste, Serra Gaúcha e praias paradisíacas",
+      "priceFrom": "A partir de 12x R$ 219",
+      "image": "https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?auto=format&fit=crop&w=1600&q=85"
+    },
+    {
+      "id": "internacionais",
+      "name": "Viagens Internacionais",
+      "shortName": "Internacionais",
+      "badge": "03 • MUNDO",
+      "subtitle": "Caribe, Miami, Cancún, Europa e roteiros completos no exterior",
+      "priceFrom": "A partir de 12x R$ 429",
+      "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1600&q=85"
+    },
+    {
+      "id": "promocionais",
+      "name": "Pacotes Promocionais",
+      "shortName": "Promocionais",
+      "badge": "04 • OPORTUNIDADES",
+      "subtitle": "2º hóspede grátis, upgrades de cabine e tarifas negociadas",
+      "priceFrom": "A partir de 12x R$ 189",
+      "image": "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?auto=format&fit=crop&w=1600&q=85"
+    },
+    {
+      "id": "ultimas-vagas",
+      "name": "Últimas Ofertas & Vagas",
+      "shortName": "Últimas Vagas",
+      "badge": "05 • ÚLTIMAS CABINES",
+      "subtitle": "Bloqueios exclusivos com embarque próximo e desconto imediato",
+      "priceFrom": "A partir de 12x R$ 179",
+      "image": "https://images.unsplash.com/photo-1599640842225-85d111c60e6b?auto=format&fit=crop&w=1600&q=85"
+    }
+  ],
+  "packages": [
+    {
+      "id": "msc-seaview-santos-nordeste",
+      "title": "Cruzeiro Costa Dourada & Nordeste",
+      "subtitle": "MSC Seaview • Cabine com Varanda Vista Mar",
+      "category": "cruzeiros",
+      "alsoIn": [
+        "promocionais"
+      ],
+      "port": "Santos - SP",
+      "duration": "7 / 8 dias",
+      "route": "Santos • Búzios • Salvador • Ilhéus • Santos",
+      "shipOrHotel": "MSC Seaview",
+      "priceInstallment": "12x de R$ 389",
+      "priceTotal": "ou R$ 4.668 por pessoa + taxas",
+      "badge": "MAIS PROCURADO",
+      "urgencyTag": "Tarifa Super Bingo c/ Varanda",
+      "image": "https://images.unsplash.com/photo-1548574505-5e239809ee19?auto=format&fit=crop&w=1200&q=85"
+    },
+    {
+      "id": "mini-cruzeiro-santos-buzios",
+      "title": "Mini Cruzeiro Búzios & Ilhabela",
+      "subtitle": "Costa Diadema • Escapada de Fim de Semana",
+      "category": "cruzeiros",
+      "alsoIn": [
+        "ultimas-vagas",
+        "promocionais"
+      ],
+      "port": "Santos - SP",
+      "duration": "3 / 4 dias",
+      "route": "Santos • Búzios • Ilhabela • Santos",
+      "shipOrHotel": "Costa Diadema",
+      "priceInstallment": "12x de R$ 199",
+      "priceTotal": "ou R$ 2.388 por pessoa + taxas",
+      "badge": "SAÍDA DE SANTOS • 3/4 DIAS",
+      "urgencyTag": "Últimas 4 cabines nessa tarifa",
+      "image": "https://images.unsplash.com/photo-1599640842225-85d111c60e6b?auto=format&fit=crop&w=1200&q=85"
+    },
+    {
+      "id": "cruzeiro-prata-buenos-aires",
+      "title": "Cruzeiro Internacional Rio da Prata",
+      "subtitle": "Buenos Aires, Punta del Este & Montevidéu",
+      "category": "cruzeiros",
+      "alsoIn": [
+        "internacionais"
+      ],
+      "port": "Santos - SP",
+      "duration": "7 / 8 dias",
+      "route": "Santos ou Itajaí • Punta del Este • Buenos Aires • Montevidéu",
+      "shipOrHotel": "MSC Grandiosa",
+      "priceInstallment": "12x de R$ 429",
+      "priceTotal": "ou R$ 5.148 por pessoa + taxas",
+      "badge": "ROTEIRO INTERNACIONAL",
+      "urgencyTag": "Apenas RG ou Passaporte",
+      "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=85"
+    },
+    {
+      "id": "cruzeiro-salvador-maceio-7dias",
+      "title": "Cruzeiro Sol do Nordeste",
+      "subtitle": "Embarque no Rio de Janeiro, Salvador ou Maceió",
+      "category": "cruzeiros",
+      "alsoIn": [
+        "nacionais"
+      ],
+      "port": "Salvador - BA",
+      "duration": "7 / 8 dias",
+      "route": "Salvador • Maceió • Rio de Janeiro • Ilhabela • Búzios",
+      "shipOrHotel": "MSC Orchestra / Seaview",
+      "priceInstallment": "12x de R$ 359",
+      "priceTotal": "ou R$ 4.308 por pessoa + taxas",
+      "badge": "EMBARQUE RIO / NORDESTE",
+      "urgencyTag": "Roteiro completo de 7/8 dias",
+      "image": "https://images.unsplash.com/photo-1580541631950-7282082b53ce?auto=format&fit=crop&w=1200&q=85"
+    },
+    {
+      "id": "maragogi-resort-all-inclusive",
+      "title": "Maragogi Resort All Inclusive",
+      "subtitle": "Aéreo + 5 Noites Pé na Areia",
+      "category": "nacionais",
+      "alsoIn": [
+        "promocionais"
+      ],
+      "port": "Embarque Aéreo Nacional",
+      "duration": "6 dias",
+      "route": "Maceió • Maragogi • Piscinas Naturais das Galés",
+      "shipOrHotel": "Salinas / Grand Oca Maragogi",
+      "priceInstallment": "12x de R$ 345",
+      "priceTotal": "ou R$ 4.140 por pessoa",
+      "badge": "ALL INCLUSIVE 24H",
+      "urgencyTag": "Criança grátis até 12 anos",
+      "image": "https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?auto=format&fit=crop&w=1200&q=85"
+    },
+    {
+      "id": "gramado-canela-experiencia",
+      "title": "Serra Gaúcha: Gramado & Canela",
+      "subtitle": "Aéreo + Hotel Boutique + Passeios",
+      "category": "nacionais",
+      "alsoIn": [],
+      "port": "Embarque Aéreo Nacional",
+      "duration": "5 dias",
+      "route": "Porto Alegre • Gramado • Canela",
+      "shipOrHotel": "Hotel Boutique Gramado",
+      "priceInstallment": "12x de R$ 219",
+      "priceTotal": "ou R$ 2.628 por pessoa",
+      "badge": "ROMÂNTICO & FAMÍLIA",
+      "urgencyTag": "Café da manhã incluso",
+      "image": "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1200&q=85"
+    },
+    {
+      "id": "caribe-cruzeiro-miami-bahamas",
+      "title": "Caribe & Ilha Privativa Ocean Cay",
+      "subtitle": "Cruzeiro Saindo de Miami ou Orlando",
+      "category": "internacionais",
+      "alsoIn": [
+        "cruzeiros"
+      ],
+      "port": "Porto Internacional / Aéreo Incluso",
+      "duration": "7 / 8 dias",
+      "route": "Miami • Nassau (Bahamas) • Ocean Cay • Cozumel",
+      "shipOrHotel": "MSC World America / Royal Caribbean",
+      "priceInstallment": "12x de R$ 589",
+      "priceTotal": "ou R$ 7.068 por pessoa",
+      "badge": "CARIBE INTERNACIONAL",
+      "urgencyTag": "Parada em ilha privativa nas Bahamas",
+      "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=85"
+    },
+    {
+      "id": "cancun-riviera-maya-vip",
+      "title": "Cancún & Riviera Maya All Inclusive 5★",
+      "subtitle": "Aéreo + Resort Frente ao Mar do Caribe",
+      "category": "internacionais",
+      "alsoIn": [
+        "promocionais"
+      ],
+      "port": "Porto Internacional / Aéreo Incluso",
+      "duration": "7 / 8 dias",
+      "route": "Cancún • Isla Mujeres • Tulum",
+      "shipOrHotel": "Resort 5★ Cancún",
+      "priceInstallment": "12x de R$ 549",
+      "priceTotal": "ou R$ 6.588 por pessoa",
+      "badge": "CARIBE MEXICANO",
+      "urgencyTag": "All Inclusive frente mar",
+      "image": "https://images.unsplash.com/photo-1510097467424-192d713fd8b2?auto=format&fit=crop&w=1200&q=85"
+    },
+    {
+      "id": "oferta-relampago-2-hospede-gratis",
+      "title": "Promoção 2º Hóspede c/ Super Desconto",
+      "subtitle": "Cruzeiro Litoral Brasileiro • Cabine Dupla ou Familiar",
+      "category": "promocionais",
+      "alsoIn": [
+        "cruzeiros",
+        "ultimas-vagas"
+      ],
+      "port": "Santos - SP",
+      "duration": "7 / 8 dias",
+      "route": "Santos • Rio de Janeiro • Salvador • Búzios",
+      "shipOrHotel": "Temporada América do Sul",
+      "priceInstallment": "12x de R$ 289",
+      "priceTotal": "valor médio por pessoa em cabine dupla",
+      "badge": "SUPER PROMOÇÃO",
+      "urgencyTag": "Lote promocional limitado",
+      "image": "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?auto=format&fit=crop&w=1200&q=85"
+    },
+    {
+      "id": "ultimas-cabines-embarque-proximo",
+      "title": "Últimas Cabines: Saída Especial de Santos",
+      "subtitle": "Upgrade Garantido para Cabine Externa / Varanda",
+      "category": "ultimas-vagas",
+      "alsoIn": [
+        "cruzeiros",
+        "promocionais"
+      ],
+      "port": "Santos - SP",
+      "duration": "3 / 4 dias",
+      "route": "Santos • Ilhabela • Búzios • Santos",
+      "shipOrHotel": "Bloqueio Exclusivo Bellustour",
+      "priceInstallment": "12x de R$ 179",
+      "priceTotal": "ou R$ 2.148 por pessoa + taxas",
+      "badge": "ÚLTIMAS 3 VAGAS",
+      "urgencyTag": "Tarifa de fechamento de navio",
+      "image": "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?auto=format&fit=crop&w=1200&q=85"
+    }
+  ]
+}
