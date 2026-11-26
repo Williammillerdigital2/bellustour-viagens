@@ -344,6 +344,53 @@ async function runTests() {
       JSON.stringify(mobilePopupCheck)
     );
 
+    // Regression #12: Even on a short mobile screen with browser address/bottom bars visible (360x620),
+    // the Category Packages Popup must have ZERO vertical scroll (overflow-y: hidden, scrollHeight <= clientHeight),
+    // while showing 100% of the card information (photo, title, subtitle, route, price & quote button),
+    // and only the Quote Modal (.quote-modal) allows vertical scrolling.
+    await page.setViewport(360, 620, true);
+    await new Promise((r) => setTimeout(r, 150));
+    const mobileNoVerticalScrollCheck = await page.eval(() => {
+      const catModal = document.querySelector(".category-showcase-modal");
+      const quoteModal = document.querySelector(".quote-modal");
+      const firstCard = catModal.querySelector(".pkg-card");
+      const quoteBtn = firstCard.querySelector(".js-pkg-quote");
+      const titleEl = firstCard.querySelector(".pkg-card-title");
+      const routeEl = firstCard.querySelector(".pkg-card-route");
+      const priceEl = firstCard.querySelector(".price-main");
+
+      const modalRect = catModal.getBoundingClientRect();
+      const cardRect = firstCard.getBoundingClientRect();
+      const btnRect = quoteBtn.getBoundingClientRect();
+
+      return {
+        catOverflowY: getComputedStyle(catModal).overflowY,
+        zeroVerticalScroll: catModal.scrollHeight <= catModal.clientHeight + 1,
+        cardFullyInsideModal:
+          cardRect.top >= modalRect.top &&
+          cardRect.bottom <= modalRect.bottom + 1,
+        btnFullyVisible:
+          btnRect.top >= modalRect.top &&
+          btnRect.bottom <= modalRect.bottom + 1,
+        allCardFieldsRendered: Boolean(
+          titleEl?.textContent && routeEl?.textContent && priceEl?.textContent
+        ),
+        quoteModalHasVerticalScroll:
+          getComputedStyle(quoteModal).overflowY === "auto"
+      };
+    });
+
+    assert(
+      mobileNoVerticalScrollCheck.catOverflowY === "hidden" &&
+        mobileNoVerticalScrollCheck.zeroVerticalScroll &&
+        mobileNoVerticalScrollCheck.cardFullyInsideModal &&
+        mobileNoVerticalScrollCheck.btnFullyVisible &&
+        mobileNoVerticalScrollCheck.allCardFieldsRendered &&
+        mobileNoVerticalScrollCheck.quoteModalHasVerticalScroll,
+      "REGRESSION #12 (Zero Vertical Scroll in Mobile Category Popup): On compact mobile viewport (360x620), Category Popup has zero vertical scroll, displays full card info & CTA button, and keeps vertical scroll exclusive to Quote Modal",
+      JSON.stringify(mobileNoVerticalScrollCheck)
+    );
+
     // Regression #3: Clicking "Faça sua cotação" opens Matheus Quote Popup and enforces Santos (3/4 or 7/8 dias) vs Other Ports (7/8 dias) rule
     await page.setViewport(1440, 900, false);
     const quoteRuleCheck = await page.eval(() => {

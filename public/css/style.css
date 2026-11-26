@@ -643,20 +643,23 @@ img {
   visibility: visible;
 }
 
-/* Category Packages Showcase Window — Zero Visible Scrollbar & Always Compact */
+/* Category Packages Showcase Window — Strictly Horizontal Scroll Only (Zero Vertical Scroll) */
 .category-showcase-modal {
   position: relative;
   width: 100%;
   max-width: 1180px;
-  max-height: 90svh;
-  overflow-y: auto;
+  max-height: 90dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
   border-radius: var(--radius-lg);
   background: linear-gradient(165deg, #081736 0%, #030a1a 100%);
   border: 1px solid var(--border-gold);
   box-shadow: 0 35px 100px rgba(0, 0, 0, 0.92);
-  padding: clamp(20px, 2.8vw, 34px);
+  padding: clamp(16px, 2.4vw, 30px);
   transform: translateY(20px) scale(0.97);
   transition: transform 0.34s var(--ease-spring);
 }
@@ -749,7 +752,7 @@ img {
   border-color: var(--border-gold);
 }
 
-/* Single-Row Horizontal Glide Rail (Always keeps the clean 3-card layout without vertical scrollbar) */
+/* Single-Row Horizontal Glide Rail (Strictly Horizontal, Zero Vertical Scroll) */
 .packages-grid {
   display: grid;
   grid-auto-flow: column;
@@ -757,11 +760,14 @@ img {
   gap: 22px;
   overflow-x: auto;
   overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
 }
 
 .packages-grid::-webkit-scrollbar {
@@ -789,7 +795,7 @@ img {
 
 .pkg-card-media {
   position: relative;
-  aspect-ratio: 16 / 10;
+  height: clamp(130px, 23dvh, 210px);
   overflow: hidden;
 }
 
@@ -1151,10 +1157,15 @@ img {
     margin-bottom: 12px;
   }
   .pkg-card-media {
-    aspect-ratio: 16 / 8.5;
+    height: clamp(110px, 19dvh, 160px);
   }
   .pkg-card-body {
-    padding: 13px 15px;
+    padding: 12px 14px;
+    gap: 3px;
+  }
+  .pkg-card-footer {
+    margin-top: 8px;
+    padding-top: 8px;
   }
 }
 
@@ -1256,57 +1267,123 @@ img {
     display: none;
   }
 
-  /* Category Showcase Popup on Mobile: 1 card + peek of next card, zero vertical overflow */
+  /* Category Showcase Popup on Mobile: Strictly Horizontal Only, 100% Card Info Visible */
   .modal-backdrop {
-    padding: 10px;
+    padding: 8px;
   }
   .category-showcase-modal {
-    padding: 16px;
-    max-height: 92svh;
+    padding: 14px;
+    max-height: 92dvh;
+    overflow-y: hidden;
     border-radius: 20px;
   }
   .showcase-header {
-    padding-bottom: 12px;
-    margin-bottom: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  #cat-modal-badge {
+    font-size: 0.62rem;
+  }
+  #cat-modal-title {
+    font-size: 1.22rem !important;
+    line-height: 1.15;
+  }
+  #cat-modal-sub {
+    font-size: 0.74rem !important;
+    line-height: 1.25;
+    margin-top: 2px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
   .showcase-toolbar {
-    margin-bottom: 12px;
-    gap: 8px;
+    margin-bottom: 10px;
+    gap: 6px;
+    flex-wrap: nowrap;
   }
   .showcase-switcher-pills {
     flex-wrap: nowrap;
     overflow-x: auto;
     max-width: 100%;
     scrollbar-width: none;
+    touch-action: pan-x;
     padding-bottom: 2px;
   }
   .showcase-switcher-pills::-webkit-scrollbar {
     display: none;
   }
+  .showcase-nav-arrows {
+    display: none !important;
+  }
   .showcase-pill {
     white-space: nowrap;
-    padding: 6px 11px;
-    font-size: 0.72rem;
+    padding: 5px 10px;
+    font-size: 0.71rem;
   }
   .packages-grid {
     grid-auto-columns: 88%;
-    gap: 14px;
+    gap: 12px;
   }
   .pkg-card-media {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: auto;
+    height: clamp(115px, 20dvh, 168px);
+  }
+  .pkg-card-badges {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+  }
+  .badge-tag {
+    padding: 4px 8px;
+    font-size: 0.62rem;
+  }
+  .pkg-card-port {
+    bottom: 8px;
+    left: 8px;
+    padding: 3px 8px;
+    font-size: 0.66rem;
   }
   .pkg-card-body {
-    padding: 14px;
+    padding: 10px 12px;
+    gap: 2px;
   }
   .pkg-card-title {
-    font-size: 1rem;
+    font-size: 0.96rem;
+    line-height: 1.18;
+  }
+  .pkg-card-sub {
+    font-size: 0.75rem;
+    line-height: 1.22;
+  }
+  .pkg-card-route {
+    font-size: 0.72rem;
+    line-height: 1.25;
+    margin-top: 2px;
+  }
+  .pkg-card-footer {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+  .price-block .price-label {
+    font-size: 0.62rem;
   }
   .price-block .price-main {
-    font-size: 1.05rem;
+    font-size: 1rem;
+    line-height: 1.1;
+  }
+  .price-block .price-sub {
+    font-size: 0.64rem;
+  }
+  .pkg-card-footer .btn {
+    padding: 9px 14px;
+    font-size: 0.78rem;
   }
   .quote-modal {
     padding: 18px;
-    max-height: 92svh;
+    max-height: 92dvh;
+    overflow-y: auto;
     border-radius: 20px;
   }
   .form-row-2,
