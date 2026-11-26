@@ -96,6 +96,23 @@
     setText("popup-welcome-prompt", p.welcomePrompt || "");
     setText("popup-welcome-footer", p.welcomeFooter || "");
     setText("popup-btn-label", p.buttonText || "Cotação");
+
+    setText("label-field-port", p.labelPort || "📍 De qual porto você gostaria de sair?");
+    setText("label-field-passengers", p.labelPassengers || "👨‍👩‍👧‍👦 Quantas pessoas vão viajar?");
+    setText("label-field-adults", p.labelAdults || "🔞 Todos são adultos?");
+    setText("label-field-month", p.labelMonth || "📅 Qual mês você pretende viajar?");
+    setText("label-field-duration", p.labelDuration || "⏳ Qual duração você prefere?");
+
+    setText("dur-short-title", p.durShortTitle || "3 / 4 dias");
+    setText("dur-short-sub", p.durShortSub || "Mini Cruzeiro (Exclusivo Santos)");
+    setText("dur-long-title", p.durLongTitle || "7 / 8 dias");
+    setText("dur-long-sub", p.durLongSub || "Roteiro Completo (Todos os portos)");
+
+    const inputShort = document.getElementById("dur-input-short");
+    const inputLong = document.getElementById("dur-input-long");
+    if (inputShort && p.durShortTitle) inputShort.value = p.durShortTitle;
+    if (inputLong && p.durLongTitle) inputLong.value = p.durLongTitle;
+
     setText("rule-santos-text", p.santosRuleText || "👉 Saindo de Santos: temos opções de 3/4 dias ou 7/8 dias");
     setText("rule-other-text", p.otherPortsRuleText || "👉 Outros portos: roteiros de 7/8 dias");
 
@@ -664,7 +681,9 @@
       ?.addEventListener("click", () => {
         const b = siteConfig.brand || {};
         const rawPhone = (b.headerButtonWhatsapp || b.whatsappNumber || "").replace(/\D/g, "");
-        const msg = `Olá Matheus! Vim pelo site da *Bellustour* e gostaria de atendimento 🛳️✨`;
+        const msg =
+          b.headerWhatsappMessage ||
+          `Olá Matheus! Vim pelo site da *Bellustour* e gostaria de atendimento 🛳️✨`;
         if (rawPhone) {
           const waUrl = `https://wa.me/${rawPhone}?text=${encodeURIComponent(msg)}`;
           window.open(waUrl, "_blank", "noopener,noreferrer");
@@ -710,20 +729,30 @@
         ? `${selectedPackage.title} (${selectedPackage.shipOrHotel || "Bellustour"})`
         : "Consultoria Personalizada Bellustour";
 
-      const messageLines = [
+      const defaultTemplate = [
         `Olá Matheus! Vim pelo site da *Bellustour* e quero fazer uma cotação 🛳️✨`,
         ``,
-        `📦 *Pacote de interesse:* ${pkgTitle}`,
-        `📍 *Porto de saída:* ${port}`,
-        `👨‍👩‍👧‍👦 *Quantidade de pessoas:* ${passengers}`,
-        `🔞 *Todos são adultos?* ${adults}`,
-        `📅 *Mês pretendido:* ${month}`,
-        `⏳ *Duração preferida:* ${duration}`,
+        `📦 *Pacote de interesse:* {pacote}`,
+        `📍 *Porto de saída:* {porto}`,
+        `👨‍👩‍👧‍👦 *Quantidade de pessoas:* {pessoas}`,
+        `🔞 *Todos são adultos?* {adultos}`,
+        `📅 *Mês pretendido:* {mes}`,
+        `⏳ *Duração preferida:* {duracao}`,
         ``,
         `Pode me enviar as melhores ofertas disponíveis hoje?`
-      ];
+      ].join("\n");
 
-      const fullMessage = messageLines.join("\n");
+      const rawTemplate =
+        (siteConfig.popup && siteConfig.popup.whatsappTemplate) ||
+        defaultTemplate;
+
+      const fullMessage = rawTemplate
+        .replace(/\{pacote\}/gi, pkgTitle)
+        .replace(/\{porto\}/gi, port)
+        .replace(/\{pessoas\}/gi, passengers)
+        .replace(/\{adultos\}/gi, adults)
+        .replace(/\{mes\}/gi, month)
+        .replace(/\{duracao\}/gi, duration);
       const rawPhone = (
         (siteConfig.brand && siteConfig.brand.whatsappNumber) ||
         ""

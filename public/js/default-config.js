@@ -11,6 +11,7 @@ window.BELLUSTOUR_DEFAULT_CONFIG = {
     "whatsappNumber": "+5511973886395",
     "headerButtonText": "Fale Conosco",
     "headerButtonWhatsapp": "+5511973886395",
+    "headerWhatsappMessage": "Olá Matheus! Vim pelo site da *Bellustour* e gostaria de atendimento 🛳️✨",
     "instagramUrl": "https://instagram.com/",
     "email": "contato@bellustour.com.br",
     "cnpj": "00.000.000/0001-00",
@@ -24,6 +25,15 @@ window.BELLUSTOUR_DEFAULT_CONFIG = {
     "welcomePrompt": "Para eu te enviar as melhores opções, me conta rapidinho:",
     "welcomeFooter": "Assim já te mando as melhores ofertas disponíveis pra você hoje!",
     "buttonText": "Cotação",
+    "labelPort": "📍 De qual porto você gostaria de sair?",
+    "labelPassengers": "👨‍👩‍👧‍👦 Quantas pessoas vão viajar?",
+    "labelAdults": "🔞 Todos são adultos?",
+    "labelMonth": "📅 Qual mês você pretende viajar?",
+    "labelDuration": "⏳ Qual duração você prefere?",
+    "durShortTitle": "3 / 4 dias",
+    "durShortSub": "Mini Cruzeiro (Exclusivo Santos)",
+    "durLongTitle": "7 / 8 dias",
+    "durLongSub": "Roteiro Completo (Todos os portos)",
     "ports": [
       "Santos - SP",
       "Rio de Janeiro - RJ",
@@ -60,7 +70,8 @@ window.BELLUSTOUR_DEFAULT_CONFIG = {
       "Data flexível (Quero o melhor preço)"
     ],
     "santosRuleText": "👉 Saindo de Santos: temos opções de 3/4 dias ou 7/8 dias",
-    "otherPortsRuleText": "👉 Outros portos: roteiros de 7/8 dias"
+    "otherPortsRuleText": "👉 Outros portos: roteiros de 7/8 dias",
+    "whatsappTemplate": "Olá Matheus! Vim pelo site da *Bellustour* e quero fazer uma cotação 🛳️✨\n\n📦 *Pacote de interesse:* {pacote}\n📍 *Porto de saída:* {porto}\n👨‍👩‍👧‍👦 *Quantidade de pessoas:* {pessoas}\n🔞 *Todos são adultos?* {adultos}\n📅 *Mês pretendido:* {mes}\n⏳ *Duração preferida:* {duracao}\n\nPode me enviar as melhores ofertas disponíveis hoje?"
   },
   "categories": [
     {

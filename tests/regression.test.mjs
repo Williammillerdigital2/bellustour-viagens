@@ -439,11 +439,11 @@ async function runTests() {
         hasFormattedWhatsAppMsg:
           (previewMsg.includes("Bellustour") &&
             previewMsg.includes("Rio de Janeiro - RJ") &&
-            previewMsg.includes("7/8 dias")) ||
+            (previewMsg.includes("7/8 dias") || previewMsg.includes("7 / 8 dias"))) ||
           (decodedUrl.includes("wa.me/") &&
             decodedUrl.includes("Bellustour") &&
             decodedUrl.includes("Rio de Janeiro - RJ") &&
-            decodedUrl.includes("7/8 dias"))
+            (decodedUrl.includes("7/8 dias") || decodedUrl.includes("7 / 8 dias")))
       };
     });
 
@@ -664,6 +664,79 @@ async function runTests() {
         adminHeaderNoOverlapCheck.singleSaveButtonOnly,
       "REGRESSION #11 (Admin Header No Overlap & No Duplicate Buttons): Admin top header does not overlap content on scroll and has zero duplicate Save/View Site buttons near the logo",
       JSON.stringify(adminHeaderNoOverlapCheck)
+    );
+
+    // Regression #13: All 5 Quote Form questions, option lists (ports, passengers, adults, months), and duration cards must be editable in Admin Tab 4
+    const formEditorFieldsCheck = await page.eval(() => {
+      const requiredAdminIds = [
+        "adm-pop-title",
+        "adm-pop-intro",
+        "adm-pop-pitch",
+        "adm-pop-prompt",
+        "adm-pop-label-port",
+        "adm-pop-ports",
+        "adm-pop-label-passengers",
+        "adm-pop-passengers",
+        "adm-pop-label-adults",
+        "adm-pop-adults",
+        "adm-pop-label-month",
+        "adm-pop-months",
+        "adm-pop-label-duration",
+        "adm-pop-dur-short-title",
+        "adm-pop-dur-short-sub",
+        "adm-pop-dur-long-title",
+        "adm-pop-dur-long-sub",
+        "adm-pop-santos",
+        "adm-pop-other",
+        "adm-pop-footer",
+        "adm-pop-btn"
+      ];
+      const missing = requiredAdminIds.filter(
+        (id) => !document.getElementById(id) || !document.getElementById(id).value
+      );
+      return {
+        allPresentAndPopulated: missing.length === 0,
+        totalFieldsChecked: requiredAdminIds.length,
+        missing
+      };
+    });
+
+    assert(
+      formEditorFieldsCheck.allPresentAndPopulated,
+      "REGRESSION #13 (Full Quote Form Editable in Admin): All 21 form fields (greeting, 5 question titles, option lists for ports/passengers/adults/months, duration buttons, rules & submit button) are present and populated in Admin",
+      JSON.stringify(formEditorFieldsCheck)
+    );
+
+    // Regression #14: WhatsApp Message Template for Quote Form (#adm-pop-wa-template) and Header Button (#adm-header-wa-msg) are editable in Admin with tag chips
+    const waTemplateAdminCheck = await page.eval(() => {
+      const tplField = document.getElementById("adm-pop-wa-template");
+      const headerMsgField = document.getElementById("adm-header-wa-msg");
+      const chips = document.querySelectorAll(".js-insert-wa-tag");
+      const resetTplBtn = document.getElementById("adm-reset-wa-tpl-btn");
+
+      const hasPlaceholders =
+        tplField &&
+        tplField.value.includes("{pacote}") &&
+        tplField.value.includes("{porto}") &&
+        tplField.value.includes("{pessoas}");
+
+      return {
+        hasTplField: Boolean(tplField && tplField.value),
+        hasHeaderMsgField: Boolean(headerMsgField && headerMsgField.value),
+        hasPlaceholders,
+        chipsCount: chips.length,
+        hasResetBtn: Boolean(resetTplBtn)
+      };
+    });
+
+    assert(
+      waTemplateAdminCheck.hasTplField &&
+        waTemplateAdminCheck.hasHeaderMsgField &&
+        waTemplateAdminCheck.hasPlaceholders &&
+        waTemplateAdminCheck.chipsCount === 6 &&
+        waTemplateAdminCheck.hasResetBtn,
+      "REGRESSION #14 (Customizable WhatsApp Message Template in Admin): WhatsApp form template, header button message, 6 variable chips ({pacote}, {porto}, {pessoas}, {adultos}, {mes}, {duracao}) and template reset button are active",
+      JSON.stringify(waTemplateAdminCheck)
     );
 
     page.close();

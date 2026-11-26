@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <link rel="icon" type="image/jpeg" href="assets/logo.jpeg" />
-  <link rel="stylesheet" href="css/style.css?v=3" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
 
   <script type="application/ld+json">
   {
@@ -160,39 +160,39 @@
 
       <form class="quote-form" id="quote-form">
         <div class="form-group">
-          <label for="field-port">📍 De qual porto você gostaria de sair?</label>
+          <label for="field-port" id="label-field-port">📍 De qual porto você gostaria de sair?</label>
           <select id="field-port" name="port" class="form-control" required></select>
         </div>
 
         <div class="form-row-2">
           <div class="form-group">
-            <label for="field-passengers">👨‍👩‍👧‍👦 Quantas pessoas vão viajar?</label>
+            <label for="field-passengers" id="label-field-passengers">👨‍👩‍👧‍👦 Quantas pessoas vão viajar?</label>
             <select id="field-passengers" name="passengers" class="form-control" required></select>
           </div>
 
           <div class="form-group">
-            <label for="field-adults">🔞 Todos são adultos?</label>
+            <label for="field-adults" id="label-field-adults">🔞 Todos são adultos?</label>
             <select id="field-adults" name="adults" class="form-control" required></select>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="field-month">📅 Qual mês você pretende viajar?</label>
+          <label for="field-month" id="label-field-month">📅 Qual mês você pretende viajar?</label>
           <select id="field-month" name="month" class="form-control" required></select>
         </div>
 
         <div class="form-group">
-          <label>⏳ Qual duração você prefere?</label>
+          <label id="label-field-duration">⏳ Qual duração você prefere?</label>
           <div class="duration-options" id="duration-options">
             <label class="duration-pill" id="dur-pill-short">
-              <input type="radio" name="duration" value="3/4 dias" />
-              <span class="dur-title">3 / 4 dias</span>
-              <span class="dur-sub">Mini Cruzeiro (Exclusivo Santos)</span>
+              <input type="radio" name="duration" value="3/4 dias" id="dur-input-short" />
+              <span class="dur-title" id="dur-short-title">3 / 4 dias</span>
+              <span class="dur-sub" id="dur-short-sub">Mini Cruzeiro (Exclusivo Santos)</span>
             </label>
             <label class="duration-pill selected" id="dur-pill-long">
-              <input type="radio" name="duration" value="7/8 dias" checked />
-              <span class="dur-title">7 / 8 dias</span>
-              <span class="dur-sub">Roteiro Completo (Todos os portos)</span>
+              <input type="radio" name="duration" value="7/8 dias" id="dur-input-long" checked />
+              <span class="dur-title" id="dur-long-title">7 / 8 dias</span>
+              <span class="dur-sub" id="dur-long-sub">Roteiro Completo (Todos os portos)</span>
             </label>
           </div>
 
@@ -222,7 +222,7 @@
     </div>
   </div>
 
-  <script src="js/default-config.js?v=3"></script>
-  <script src="js/app.js?v=3"></script>
+  <script src="js/default-config.js?v=4"></script>
+  <script src="js/app.js?v=4"></script>
 </body>
 </html>

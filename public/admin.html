@@ -636,6 +636,11 @@
                 </div>
               </div>
 
+              <div class="form-group" style="padding: 14px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle);">
+                <label for="adm-header-wa-msg">💬 Mensagem automática quando o cliente clica no botão "Fale Conosco" do topo</label>
+                <input type="text" id="adm-header-wa-msg" class="form-control" placeholder="Ex: Olá Matheus! Vim pelo site da Bellustour e gostaria de atendimento." />
+              </div>
+
               <div class="form-row-2">
                 <div class="form-group">
                   <label for="adm-logo-mode">🎨 4. Formato da Logo no Topo</label>
@@ -705,46 +710,167 @@
               <p id="rollback-status-text" style="margin-top: 10px; font-size: 0.78rem; color: #34d399;"></p>
             </div>
 
-            <h2 class="admin-card-title">💬 Mensagem do Matheus na Janela de Cotação</h2>
-            <p class="admin-card-sub">Este é o texto de recepção que aparece para o cliente quando ele toca em <strong>"Faça sua cotação"</strong> em qualquer pacote:</p>
+            <h2 class="admin-card-title">💬 Formulário de Cotação & Mensagem do Matheus</h2>
+            <p class="admin-card-sub">Personalize abaixo a mensagem de boas-vindas do Matheus e <strong>todas as 5 perguntas e opções de resposta</strong> do formulário que o cliente preenche antes de ir para o WhatsApp:</p>
 
             <div class="quote-form">
-              <div class="form-row-2">
-                <div class="form-group">
-                  <label for="adm-pop-title">Saudação Inicial</label>
-                  <input type="text" id="adm-pop-title" class="form-control" />
+              <!-- BLOCO A: BOAS-VINDAS DO MATHEUS -->
+              <div style="padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle);">
+                <h3 style="font-size: 0.96rem; font-weight: 800; color: var(--gold-bright); margin-bottom: 12px;">👋 1. Mensagem de Boas-Vindas do Matheus</h3>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="adm-pop-title">Saudação Inicial</label>
+                    <input type="text" id="adm-pop-title" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label for="adm-pop-intro">Frase de Apresentação</label>
+                    <input type="text" id="adm-pop-intro" class="form-control" />
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="adm-pop-intro">Frase de Apresentação</label>
-                  <input type="text" id="adm-pop-intro" class="form-control" />
-                </div>
-              </div>
 
-              <div class="form-group">
-                <label for="adm-pop-pitch">Mensagem de Boas-Vindas</label>
-                <textarea id="adm-pop-pitch" rows="2" class="form-control"></textarea>
-              </div>
-
-              <div class="form-row-2">
-                <div class="form-group">
-                  <label for="adm-pop-santos">Aviso sobre embarque em Santos</label>
-                  <input type="text" id="adm-pop-santos" class="form-control" />
+                <div class="form-group" style="margin-top: 10px;">
+                  <label for="adm-pop-pitch">Mensagem de Acolhimento</label>
+                  <textarea id="adm-pop-pitch" rows="2" class="form-control"></textarea>
                 </div>
-                <div class="form-group">
-                  <label for="adm-pop-other">Aviso sobre outros portos</label>
-                  <input type="text" id="adm-pop-other" class="form-control" />
+
+                <div class="form-group" style="margin-top: 10px;">
+                  <label for="adm-pop-prompt">Frase de chamada antes das perguntas</label>
+                  <input type="text" id="adm-pop-prompt" class="form-control" />
                 </div>
               </div>
 
-              <div class="form-group">
-                <label for="adm-pop-ports">📍 Opções de Portos para o cliente escolher (1 por linha)</label>
-                <textarea id="adm-pop-ports" rows="5" class="form-control"></textarea>
-                <span class="field-hint">Coloque um porto em cada linha.</span>
+              <!-- BLOCO B: PERGUNTA 1 (PORTO DE SAÍDA) -->
+              <div style="padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle);">
+                <h3 style="font-size: 0.96rem; font-weight: 800; color: var(--ocean-bright); margin-bottom: 12px;">📍 2. Primeira Pergunta (Porto / Local de Saída)</h3>
+                <div class="form-group">
+                  <label for="adm-pop-label-port">Texto da Pergunta 1</label>
+                  <input type="text" id="adm-pop-label-port" class="form-control" />
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                  <label for="adm-pop-ports">Opções de Portos para o cliente escolher (1 opção por linha)</label>
+                  <textarea id="adm-pop-ports" rows="5" class="form-control"></textarea>
+                  <span class="field-hint">Coloque um porto em cada linha. Você pode adicionar ou remover portos livremente.</span>
+                </div>
               </div>
 
-              <div class="form-group">
-                <label for="adm-pop-btn">Texto do Botão que envia para o WhatsApp</label>
-                <input type="text" id="adm-pop-btn" class="form-control" />
+              <!-- BLOCO C: PERGUNTA 2 (QUANTIDADE DE PESSOAS) -->
+              <div style="padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle);">
+                <h3 style="font-size: 0.96rem; font-weight: 800; color: var(--ocean-bright); margin-bottom: 12px;">👨‍👩‍👧‍👦 3. Segunda Pergunta (Quantidade de Pessoas)</h3>
+                <div class="form-group">
+                  <label for="adm-pop-label-passengers">Texto da Pergunta 2</label>
+                  <input type="text" id="adm-pop-label-passengers" class="form-control" />
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                  <label for="adm-pop-passengers">Opções de Quantidade de Pessoas (1 opção por linha)</label>
+                  <textarea id="adm-pop-passengers" rows="4" class="form-control"></textarea>
+                </div>
+              </div>
+
+              <!-- BLOCO D: PERGUNTA 3 (ADULTOS / CRIANÇAS) -->
+              <div style="padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle);">
+                <h3 style="font-size: 0.96rem; font-weight: 800; color: var(--ocean-bright); margin-bottom: 12px;">🔞 4. Terceira Pergunta (Adultos ou Crianças)</h3>
+                <div class="form-group">
+                  <label for="adm-pop-label-adults">Texto da Pergunta 3</label>
+                  <input type="text" id="adm-pop-label-adults" class="form-control" />
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                  <label for="adm-pop-adults">Opções de Resposta (1 opção por linha)</label>
+                  <textarea id="adm-pop-adults" rows="2" class="form-control"></textarea>
+                </div>
+              </div>
+
+              <!-- BLOCO E: PERGUNTA 4 (MÊS DA VIAGEM) -->
+              <div style="padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle);">
+                <h3 style="font-size: 0.96rem; font-weight: 800; color: var(--ocean-bright); margin-bottom: 12px;">📅 5. Quarta Pergunta (Mês da Viagem)</h3>
+                <div class="form-group">
+                  <label for="adm-pop-label-month">Texto da Pergunta 4</label>
+                  <input type="text" id="adm-pop-label-month" class="form-control" />
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                  <label for="adm-pop-months">Opções de Meses (1 mês por linha)</label>
+                  <textarea id="adm-pop-months" rows="6" class="form-control"></textarea>
+                </div>
+              </div>
+
+              <!-- BLOCO F: PERGUNTA 5 (DURAÇÃO & REGRAS DE SANTOS) -->
+              <div style="padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle);">
+                <h3 style="font-size: 0.96rem; font-weight: 800; color: var(--ocean-bright); margin-bottom: 12px;">⏳ 6. Quinta Pergunta (Duração & Regras dos Portos)</h3>
+                <div class="form-group">
+                  <label for="adm-pop-label-duration">Texto da Pergunta 5</label>
+                  <input type="text" id="adm-pop-label-duration" class="form-control" />
+                </div>
+
+                <div class="form-row-2" style="margin-top: 10px;">
+                  <div class="form-group">
+                    <label for="adm-pop-dur-short-title">Botão Duração Curta (Título)</label>
+                    <input type="text" id="adm-pop-dur-short-title" class="form-control" placeholder="Ex: 3 / 4 dias" />
+                  </div>
+                  <div class="form-group">
+                    <label for="adm-pop-dur-short-sub">Botão Duração Curta (Explicação)</label>
+                    <input type="text" id="adm-pop-dur-short-sub" class="form-control" placeholder="Ex: Mini Cruzeiro (Exclusivo Santos)" />
+                  </div>
+                </div>
+
+                <div class="form-row-2" style="margin-top: 10px;">
+                  <div class="form-group">
+                    <label for="adm-pop-dur-long-title">Botão Duração Completa (Título)</label>
+                    <input type="text" id="adm-pop-dur-long-title" class="form-control" placeholder="Ex: 7 / 8 dias" />
+                  </div>
+                  <div class="form-group">
+                    <label for="adm-pop-dur-long-sub">Botão Duração Completa (Explicação)</label>
+                    <input type="text" id="adm-pop-dur-long-sub" class="form-control" placeholder="Ex: Roteiro Completo (Todos os portos)" />
+                  </div>
+                </div>
+
+                <div class="form-row-2" style="margin-top: 10px;">
+                  <div class="form-group">
+                    <label for="adm-pop-santos">Aviso sobre embarque em Santos</label>
+                    <input type="text" id="adm-pop-santos" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label for="adm-pop-other">Aviso sobre outros portos</label>
+                    <input type="text" id="adm-pop-other" class="form-control" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- BLOCO G: FECHAMENTO E BOTÃO FINAL -->
+              <div style="padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle);">
+                <h3 style="font-size: 0.96rem; font-weight: 800; color: var(--gold-bright); margin-bottom: 12px;">💬 7. Frase Final & Botão de Envio ao WhatsApp</h3>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="adm-pop-footer">Frase acima do botão de envio</label>
+                    <input type="text" id="adm-pop-footer" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label for="adm-pop-btn">Texto do Botão que envia para o WhatsApp</label>
+                    <input type="text" id="adm-pop-btn" class="form-control" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- BLOCO H: MENSAGEM ENVIADA PARA O WHATSAPP COM O FORMULÁRIO -->
+              <div style="padding: 18px; border-radius: 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.4);">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
+                  <h3 style="font-size: 1rem; font-weight: 800; color: #34d399;">📲 8. Mensagem que chega no seu WhatsApp com os dados do formulário</h3>
+                  <button type="button" class="btn btn-glass btn-sm" id="adm-reset-wa-tpl-btn" style="font-size: 0.74rem; padding: 6px 12px;">🔄 Restaurar modelo padrão</button>
+                </div>
+                <p class="field-hint" style="margin-bottom: 10px;">
+                  Escreva abaixo como você quer receber a mensagem no WhatsApp. As palavras entre chaves <code>{pacote}</code>, <code>{porto}</code>, etc. são trocadas automaticamente pelo que o cliente escolheu no formulário. Toque em um botão abaixo para inserir:
+                </p>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;" id="wa-tag-chips">
+                  <button type="button" class="admin-filter-pill js-insert-wa-tag" data-tag="{pacote}">+ Nome do Pacote {pacote}</button>
+                  <button type="button" class="admin-filter-pill js-insert-wa-tag" data-tag="{porto}">+ Porto {porto}</button>
+                  <button type="button" class="admin-filter-pill js-insert-wa-tag" data-tag="{pessoas}">+ Qtd. Pessoas {pessoas}</button>
+                  <button type="button" class="admin-filter-pill js-insert-wa-tag" data-tag="{adultos}">+ Adultos/Crianças {adultos}</button>
+                  <button type="button" class="admin-filter-pill js-insert-wa-tag" data-tag="{mes}">+ Mês {mes}</button>
+                  <button type="button" class="admin-filter-pill js-insert-wa-tag" data-tag="{duracao}">+ Duração {duracao}</button>
+                </div>
+
+                <div class="form-group">
+                  <textarea id="adm-pop-wa-template" rows="9" class="form-control" style="font-family: inherit; line-height: 1.45;"></textarea>
+                </div>
               </div>
             </div>
           </section>
@@ -761,7 +887,7 @@
 
   <div class="toast-bar" id="admin-toast">✓ Alterações salvas com sucesso!</div>
 
-  <script src="js/default-config.js"></script>
-  <script src="js/admin.js"></script>
+  <script src="js/default-config.js?v=4"></script>
+  <script src="js/admin.js?v=4"></script>
 </body>
 </html>

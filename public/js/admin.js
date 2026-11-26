@@ -58,6 +58,11 @@
     setVal("adm-whatsapp", b.whatsappNumber || "");
     setVal("adm-header-btn-text", b.headerButtonText || "Fale Conosco");
     setVal("adm-header-btn-wa", b.headerButtonWhatsapp || b.whatsappNumber || "");
+    setVal(
+      "adm-header-wa-msg",
+      b.headerWhatsappMessage ||
+        "Olá Matheus! Vim pelo site da *Bellustour* e gostaria de atendimento 🛳️✨"
+    );
     setVal("adm-logo-mode", b.logoMode || "refined");
     setVal("adm-brand-name", b.name || "Bellustour");
     setVal("adm-tagline", b.tagline || "");
@@ -70,10 +75,31 @@
     setVal("adm-pop-title", p.welcomeTitle || "");
     setVal("adm-pop-intro", p.welcomeIntro || "");
     setVal("adm-pop-pitch", p.welcomePitch || "");
+    setVal("adm-pop-prompt", p.welcomePrompt || "Para eu te enviar as melhores opções, me conta rapidinho:");
+    setVal("adm-pop-footer", p.welcomeFooter || "Assim já te mando as melhores ofertas disponíveis pra você hoje!");
+
+    setVal("adm-pop-label-port", p.labelPort || "📍 De qual porto você gostaria de sair?");
+    setVal("adm-pop-ports", (p.ports || []).join("\n"));
+
+    setVal("adm-pop-label-passengers", p.labelPassengers || "👨‍👩‍👧‍👦 Quantas pessoas vão viajar?");
+    setVal("adm-pop-passengers", (p.passengersOptions || []).join("\n"));
+
+    setVal("adm-pop-label-adults", p.labelAdults || "🔞 Todos são adultos?");
+    setVal("adm-pop-adults", (p.adultsOptions || []).join("\n"));
+
+    setVal("adm-pop-label-month", p.labelMonth || "📅 Qual mês você pretende viajar?");
+    setVal("adm-pop-months", (p.months || []).join("\n"));
+
+    setVal("adm-pop-label-duration", p.labelDuration || "⏳ Qual duração você prefere?");
+    setVal("adm-pop-dur-short-title", p.durShortTitle || "3 / 4 dias");
+    setVal("adm-pop-dur-short-sub", p.durShortSub || "Mini Cruzeiro (Exclusivo Santos)");
+    setVal("adm-pop-dur-long-title", p.durLongTitle || "7 / 8 dias");
+    setVal("adm-pop-dur-long-sub", p.durLongSub || "Roteiro Completo (Todos os portos)");
+
     setVal("adm-pop-santos", p.santosRuleText || "");
     setVal("adm-pop-other", p.otherPortsRuleText || "");
-    setVal("adm-pop-ports", (p.ports || []).join("\n"));
     setVal("adm-pop-btn", p.buttonText || "Cotação");
+    setVal("adm-pop-wa-template", p.whatsappTemplate || getDefaultWaTemplate());
 
     renderCategoriesList();
     renderPackagesList();
@@ -86,6 +112,9 @@
       getVal("adm-header-btn-text").trim() || "Fale Conosco";
     config.brand.headerButtonWhatsapp =
       getVal("adm-header-btn-wa").trim() || config.brand.whatsappNumber;
+    config.brand.headerWhatsappMessage =
+      getVal("adm-header-wa-msg").trim() ||
+      "Olá Matheus! Vim pelo site da *Bellustour* e gostaria de atendimento 🛳️✨";
     config.brand.logoMode = getVal("adm-logo-mode");
     config.brand.name = getVal("adm-brand-name").trim() || "Bellustour";
     config.brand.tagline = getVal("adm-tagline").trim();
@@ -99,13 +128,59 @@
     config.popup.welcomeTitle = getVal("adm-pop-title").trim();
     config.popup.welcomeIntro = getVal("adm-pop-intro").trim();
     config.popup.welcomePitch = getVal("adm-pop-pitch").trim();
-    config.popup.santosRuleText = getVal("adm-pop-santos").trim();
-    config.popup.otherPortsRuleText = getVal("adm-pop-other").trim();
+    config.popup.welcomePrompt = getVal("adm-pop-prompt").trim();
+    config.popup.welcomeFooter = getVal("adm-pop-footer").trim();
+
+    config.popup.labelPort = getVal("adm-pop-label-port").trim() || "📍 De qual porto você gostaria de sair?";
     config.popup.ports = getVal("adm-pop-ports")
       .split("\n")
       .map((s) => s.trim())
       .filter(Boolean);
+
+    config.popup.labelPassengers = getVal("adm-pop-label-passengers").trim() || "👨‍👩‍👧‍👦 Quantas pessoas vão viajar?";
+    config.popup.passengersOptions = getVal("adm-pop-passengers")
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    config.popup.labelAdults = getVal("adm-pop-label-adults").trim() || "🔞 Todos são adultos?";
+    config.popup.adultsOptions = getVal("adm-pop-adults")
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    config.popup.labelMonth = getVal("adm-pop-label-month").trim() || "📅 Qual mês você pretende viajar?";
+    config.popup.months = getVal("adm-pop-months")
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    config.popup.labelDuration = getVal("adm-pop-label-duration").trim() || "⏳ Qual duração você prefere?";
+    config.popup.durShortTitle = getVal("adm-pop-dur-short-title").trim() || "3 / 4 dias";
+    config.popup.durShortSub = getVal("adm-pop-dur-short-sub").trim() || "Mini Cruzeiro (Exclusivo Santos)";
+    config.popup.durLongTitle = getVal("adm-pop-dur-long-title").trim() || "7 / 8 dias";
+    config.popup.durLongSub = getVal("adm-pop-dur-long-sub").trim() || "Roteiro Completo (Todos os portos)";
+
+    config.popup.santosRuleText = getVal("adm-pop-santos").trim();
+    config.popup.otherPortsRuleText = getVal("adm-pop-other").trim();
     config.popup.buttonText = getVal("adm-pop-btn").trim() || "Cotação";
+    config.popup.whatsappTemplate =
+      getVal("adm-pop-wa-template").trim() || getDefaultWaTemplate();
+  }
+
+  function getDefaultWaTemplate() {
+    return [
+      "Olá Matheus! Vim pelo site da *Bellustour* e quero fazer uma cotação 🛳️✨",
+      "",
+      "📦 *Pacote de interesse:* {pacote}",
+      "📍 *Porto de saída:* {porto}",
+      "👨‍👩‍👧‍👦 *Quantidade de pessoas:* {pessoas}",
+      "🔞 *Todos são adultos?* {adultos}",
+      "📅 *Mês pretendido:* {mes}",
+      "⏳ *Duração preferida:* {duracao}",
+      "",
+      "Pode me enviar as melhores ofertas disponíveis hoje?"
+    ].join("\n");
   }
 
   async function saveAllConfig(msg, isRollback = false) {
@@ -580,6 +655,27 @@
       .getElementById("adm-rollback-btn")
       ?.addEventListener("click", () => {
         performRollback();
+      });
+
+    // WhatsApp template tag insertion chips & reset button
+    document.querySelectorAll(".js-insert-wa-tag").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const tag = chip.getAttribute("data-tag") || "";
+        const area = document.getElementById("adm-pop-wa-template");
+        if (!area) return;
+        const start = area.selectionStart ?? area.value.length;
+        const end = area.selectionEnd ?? area.value.length;
+        area.value = area.value.slice(0, start) + tag + area.value.slice(end);
+        area.focus();
+        area.selectionStart = area.selectionEnd = start + tag.length;
+      });
+    });
+
+    document
+      .getElementById("adm-reset-wa-tpl-btn")
+      ?.addEventListener("click", () => {
+        setVal("adm-pop-wa-template", getDefaultWaTemplate());
+        showToast("🔄 Modelo padrão da mensagem do WhatsApp restaurado!");
       });
 
     updateRollbackStatusUI();
