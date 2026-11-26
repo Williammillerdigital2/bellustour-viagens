@@ -14,13 +14,81 @@
   let lastCommittedSnapshot = JSON.stringify(config);
   let activeAdminFilter = "all";
 
-  const CAT_LABELS = {
-    cruzeiros: "🛳️ Cruzeiros",
-    nacionais: "🇧🇷 Nacionais",
-    internacionais: "🌍 Internacionais",
-    promocionais: "🔥 Promocionais",
-    "ultimas-vagas": "⏳ Últimas Vagas"
+  const DEFAULT_CAT_ICONS = {
+    cruzeiros: "🛳️",
+    nacionais: "🇧🇷",
+    internacionais: "🌍",
+    promocionais: "🔥",
+    "ultimas-vagas": "⏳"
   };
+
+  function getCatIcon(cat) {
+    if (!cat) return "✨";
+    if (cat.emoji) return cat.emoji;
+    return DEFAULT_CAT_ICONS[cat.id] || "✨";
+  }
+
+  function getCatLabel(catId) {
+    const found = (config.categories || []).find((c) => c.id === catId);
+    if (found) return `${getCatIcon(found)} ${found.shortName || found.name}`;
+    return catId;
+  }
+
+  function syncDynamicCategoryControls() {
+    const cats = config.categories || [];
+
+    // 1. Rebuild Filter Pills in Tab 1
+    const pillsWrap = document.getElementById("admin-pkg-filter-pills");
+    if (pillsWrap) {
+      const pillsHtml = [
+        `<button type="button" class="admin-filter-pill ${activeAdminFilter === "all" ? "active" : ""}" data-filter="all">Todos</button>`,
+        ...cats.map(
+          (c) =>
+            `<button type="button" class="admin-filter-pill ${activeAdminFilter === c.id ? "active" : ""}" data-filter="${escapeAttr(c.id)}">${getCatIcon(c)} ${escapeHtml(c.shortName || c.name)}</button>`
+        )
+      ].join("");
+      pillsWrap.innerHTML = pillsHtml;
+
+      pillsWrap.querySelectorAll(".admin-filter-pill").forEach((pill) => {
+        pill.addEventListener("click", () => {
+          activeAdminFilter = pill.getAttribute("data-filter") || "all";
+          syncDynamicCategoryControls();
+          renderPackagesList();
+        });
+      });
+    }
+
+    // 2. Rebuild Primary Category Select (#edit-pkg-category)
+    const catSelect = document.getElementById("edit-pkg-category");
+    if (catSelect) {
+      const curVal = catSelect.value;
+      catSelect.innerHTML = cats
+        .map(
+          (c) =>
+            `<option value="${escapeAttr(c.id)}">${getCatIcon(c)} ${escapeHtml(c.name)}</option>`
+        )
+        .join("");
+      if (curVal && cats.some((c) => c.id === curVal)) {
+        catSelect.value = curVal;
+      }
+    }
+
+    // 3. Rebuild Secondary Category Select (#edit-pkg-also)
+    const alsoSelect = document.getElementById("edit-pkg-also");
+    if (alsoSelect) {
+      const curAlso = alsoSelect.value;
+      alsoSelect.innerHTML = [
+        `<option value="">Não, mostrar apenas na categoria principal</option>`,
+        ...cats.map(
+          (c) =>
+            `<option value="${escapeAttr(c.id)}">Sim, mostrar também em ${getCatIcon(c)} ${escapeHtml(c.name)}</option>`
+        )
+      ].join("");
+      if (curAlso && cats.some((c) => c.id === curAlso)) {
+        alsoSelect.value = curAlso;
+      }
+    }
+  }
 
   // --------------------------------------------------------------------------
   // 1. Load Configuration
@@ -101,6 +169,7 @@
     setVal("adm-pop-btn", p.buttonText || "Cotação");
     setVal("adm-pop-wa-template", p.whatsappTemplate || getDefaultWaTemplate());
 
+    syncDynamicCategoryControls();
     renderCategoriesList();
     renderPackagesList();
   }
@@ -316,7 +385,7 @@
   }
 
   // --------------------------------------------------------------------------
-  // 3. Render 5 Carousel Category Cover Cards (Tab 2)
+  // 3. Render Carousel Category Cover Cards (Tab 2 — Supports Add, Edit & Delete)
   // --------------------------------------------------------------------------
   function renderCategoriesList() {
     const listEl = document.getElementById("admin-cat-list");
@@ -329,19 +398,33 @@
         <div class="admin-pkg-item" style="grid-template-columns: 120px 1fr;">
           <img src="${escapeAttr(cat.image || "")}" alt="${escapeAttr(cat.name)}" style="width: 120px; height: 92px;" />
           <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+              <strong style="color: var(--gold-bright); font-size: 0.88rem;">Cartão #${idx + 1}: ${escapeHtml(getCatIcon(cat))} ${escapeHtml(cat.name || "")}</strong>
+              ${
+                cats.length > 1
+                  ? `<button type="button" class="btn btn-danger btn-sm js-del-cat" data-idx="${idx}" style="padding: 5px 11px; font-size: 0.74rem;">🗑️ Apagar Categoria</button>`
+                  : ""
+              }
+            </div>
             <div class="form-row-2">
               <div class="form-group">
-                <label>Nome do Cartão #${idx + 1}</label>
+                <label>Etiqueta Superior do Cartão #${idx + 1}</label>
+                <input type="text" class="form-control js-cat-field" data-idx="${idx}" data-field="badge" value="${escapeAttr(cat.badge || "")}" placeholder="Ex: 01 • FOCO PRINCIPAL" />
+              </div>
+              <div class="form-group">
+                <label>Nome Principal da Categoria #${idx + 1}</label>
                 <input type="text" class="form-control js-cat-field" data-idx="${idx}" data-field="name" value="${escapeAttr(cat.name || "")}" />
               </div>
+            </div>
+            <div class="form-row-2">
               <div class="form-group">
                 <label>Chamada de Preço</label>
                 <input type="text" class="form-control js-cat-field" data-idx="${idx}" data-field="priceFrom" value="${escapeAttr(cat.priceFrom || "")}" />
               </div>
-            </div>
-            <div class="form-group">
-              <label>Frase explicativa abaixo do título</label>
-              <input type="text" class="form-control js-cat-field" data-idx="${idx}" data-field="subtitle" value="${escapeAttr(cat.subtitle || "")}" />
+              <div class="form-group">
+                <label>Frase explicativa abaixo do título</label>
+                <input type="text" class="form-control js-cat-field" data-idx="${idx}" data-field="subtitle" value="${escapeAttr(cat.subtitle || "")}" />
+              </div>
             </div>
             <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
               <label class="mobile-file-label" style="padding: 9px 15px; font-size: 0.8rem;">
@@ -362,7 +445,23 @@
         const field = inp.getAttribute("data-field");
         if (config.categories[idx]) {
           config.categories[idx][field] = inp.value;
+          if (field === "name") {
+            config.categories[idx].shortName = inp.value;
+            syncDynamicCategoryControls();
+          }
         }
+      });
+    });
+
+    listEl.querySelectorAll(".js-del-cat").forEach((delBtn) => {
+      delBtn.addEventListener("click", () => {
+        if ((config.categories || []).length <= 1) return;
+        const idx = Number(delBtn.getAttribute("data-idx"));
+        config.categories.splice(idx, 1);
+        syncDynamicCategoryControls();
+        renderCategoriesList();
+        renderPackagesList();
+        saveAllConfig("🗑️ Categoria removida! (Você pode desfazer na aba 4 se quiser)");
       });
     });
 
@@ -385,6 +484,28 @@
     });
   }
 
+  function addNewCategory() {
+    config.categories = config.categories || [];
+    const num = String(config.categories.length + 1).padStart(2, "0");
+    const newId = "cat-" + Date.now();
+    config.categories.push({
+      id: newId,
+      name: "Nova Categoria",
+      shortName: "Nova Categoria",
+      emoji: "✈️",
+      badge: `${num} • DESTAQUE`,
+      subtitle: "Roteiros selecionados com a curadoria exclusiva Bellustour",
+      priceFrom: "A partir de 12x R$ 299",
+      image:
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=85"
+    });
+    syncDynamicCategoryControls();
+    renderCategoriesList();
+    saveAllConfig("✨ Nova categoria adicionada ao Carousel!");
+    const listEl = document.getElementById("admin-cat-list");
+    listEl?.lastElementChild?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
   // --------------------------------------------------------------------------
   // 4. Render Packages List & Friendly Editor (Tab 1)
   // --------------------------------------------------------------------------
@@ -404,7 +525,7 @@
 
     listEl.innerHTML = filtered
       .map((pkg) => {
-        const catLabel = CAT_LABELS[pkg.category] || pkg.category;
+        const catLabel = getCatLabel(pkg.category);
         return `
           <div class="admin-pkg-item">
             <img src="${escapeAttr(pkg.image)}" alt="${escapeAttr(pkg.title)}" />
@@ -583,6 +704,10 @@
     document
       .getElementById("adm-new-pkg-btn")
       ?.addEventListener("click", () => openPkgEditor(null));
+
+    document
+      .getElementById("adm-new-cat-btn")
+      ?.addEventListener("click", () => addNewCategory());
 
     document.getElementById("pkg-cancel-btn")?.addEventListener("click", () => {
       document.getElementById("pkg-editor-box").style.display = "none";

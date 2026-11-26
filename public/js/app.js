@@ -20,6 +20,13 @@
     "ultimas-vagas": "⏳"
   };
 
+  function getCategoryIcon(cat) {
+    if (!cat) return "✨";
+    if (cat.emoji) return cat.emoji;
+    if (cat.icon && !/^[a-z]+$/i.test(cat.icon)) return cat.icon;
+    return CATEGORY_ICONS[cat.id] || "✨";
+  }
+
   // --------------------------------------------------------------------------
   // 1. Load Configuration (LocalStorage -> /api/config -> Default)
   // --------------------------------------------------------------------------
@@ -146,7 +153,7 @@
     if (headerBar) {
       headerBar.innerHTML = cats
         .map((c, idx) => {
-          const icon = CATEGORY_ICONS[c.id] || "✨";
+          const icon = getCategoryIcon(c);
           return `
             <button
               type="button"
@@ -176,7 +183,7 @@
     track.innerHTML = cats
       .map((cat, idx) => {
         const pkgCount = getPackagesForCategory(cat.id).length;
-        const icon = CATEGORY_ICONS[cat.id] || "✨";
+        const icon = getCategoryIcon(cat);
         const coverImg =
           cat.image ||
           "https://images.unsplash.com/photo-1548574505-5e239809ee19?auto=format&fit=crop&w=1600&q=85";
@@ -275,12 +282,12 @@
         if (diff > total / 2) diff -= total;
         if (diff < -total / 2) diff += total;
 
-        let offset = "2";
+        let offset = "hidden";
         if (diff === 0) offset = "0";
         else if (diff === -1) offset = "-1";
         else if (diff === 1) offset = "1";
-        else if (diff <= -2) offset = "-2";
-        else if (diff >= 2) offset = "2";
+        else if (diff === -2) offset = "-2";
+        else if (diff === 2) offset = "2";
 
         card.setAttribute("data-offset", offset);
       });
@@ -330,7 +337,7 @@
     const backdrop = document.getElementById("category-modal-backdrop");
     if (!backdrop) return;
 
-    const icon = CATEGORY_ICONS[cat.id] || "✨";
+    const icon = getCategoryIcon(cat);
     setText("cat-modal-badge", cat.badge || "CATEGORIA BELLUSTOUR");
     setText("cat-modal-title", `${icon} ${cat.name}`);
     setText("cat-modal-sub", cat.subtitle || cat.description || "");
@@ -340,7 +347,7 @@
     if (pillsContainer) {
       pillsContainer.innerHTML = cats
         .map((c) => {
-          const cIcon = CATEGORY_ICONS[c.id] || "✨";
+          const cIcon = getCategoryIcon(c);
           const count = getPackagesForCategory(c.id).length;
           return `
             <button

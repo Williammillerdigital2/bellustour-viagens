@@ -739,6 +739,67 @@ async function runTests() {
       JSON.stringify(waTemplateAdminCheck)
     );
 
+    // Regression #15: Category Cards Top Badge ("01 • FOCO PRINCIPAL", "02 • BRASIL", "03 • MUNDO", "04 • OPORTUNIDADES", "05 • ÚLTIMAS CABINES") must be editable in Admin Tab 2
+    const catBadgeEditorCheck = await page.eval(() => {
+      const badgeInputs = Array.from(
+        document.querySelectorAll('#admin-cat-list input[data-field="badge"]')
+      );
+      return {
+        count: badgeInputs.length,
+        allPopulated:
+          badgeInputs.length === 5 &&
+          badgeInputs.every((inp) => inp.value.trim().length > 0),
+        values: badgeInputs.map((inp) => inp.value)
+      };
+    });
+
+    assert(
+      catBadgeEditorCheck.allPopulated,
+      "REGRESSION #15 (Category Top Badges Editable in Admin): All 5 category top badge fields ('01 • FOCO PRINCIPAL', '02 • BRASIL', '03 • MUNDO', '04 • OPORTUNIDADES', '05 • ÚLTIMAS CABINES') are editable in Admin Tab 2",
+      JSON.stringify(catBadgeEditorCheck)
+    );
+
+    // Regression #16: Admin allows adding a new Carousel Category, automatically syncs it to package category dropdowns & filters, and allows deleting it
+    const dynamicCategoryCrudCheck = await page.eval(async () => {
+      const addCatBtn = document.getElementById("adm-new-cat-btn");
+      if (!addCatBtn) return { ok: false };
+
+      const beforeCount = document.querySelectorAll("#admin-cat-list .admin-pkg-item").length;
+      addCatBtn.click();
+      await new Promise((r) => setTimeout(r, 150));
+
+      const afterAddCount = document.querySelectorAll("#admin-cat-list .admin-pkg-item").length;
+      const pkgSelectCount = document.getElementById("edit-pkg-category")?.options.length || 0;
+      const filterPillsCount = document.querySelectorAll(
+        "#admin-pkg-filter-pills .admin-filter-pill"
+      ).length;
+
+      // Now delete the newly added category (last one) to restore clean state
+      const delBtns = document.querySelectorAll("#admin-cat-list .js-del-cat");
+      delBtns[delBtns.length - 1]?.click();
+      await new Promise((r) => setTimeout(r, 150));
+
+      const afterDelCount = document.querySelectorAll("#admin-cat-list .admin-pkg-item").length;
+
+      return {
+        ok:
+          afterAddCount === beforeCount + 1 &&
+          pkgSelectCount === beforeCount + 1 &&
+          filterPillsCount === beforeCount + 2 &&
+          afterDelCount === beforeCount,
+        beforeCount,
+        afterAddCount,
+        pkgSelectCount,
+        afterDelCount
+      };
+    });
+
+    assert(
+      dynamicCategoryCrudCheck.ok,
+      "REGRESSION #16 (Add & Delete Carousel Categories in Admin): Clicking '+ Adicionar Nova Categoria' creates a new carousel card, syncs package category selectors & filters dynamically, and supports deletion",
+      JSON.stringify(dynamicCategoryCrudCheck)
+    );
+
     page.close();
   } finally {
     proc.kill();

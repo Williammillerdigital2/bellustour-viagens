@@ -424,8 +424,8 @@
           <button type="button" class="admin-nav-btn" data-tab="tab-categories">
             <span>🎠</span>
             <div>
-              <span>2. Capas do Início (5)</span>
-              <small>Fotos que giram na 1ª tela</small>
+              <span>2. Categorias do Início</span>
+              <small>Cartões que giram na 1ª tela</small>
             </div>
           </button>
 
@@ -601,11 +601,16 @@
           </section>
 
           <!-- ================================================================
-               ABA 2: CAPAS DO INÍCIO (5 CATEGORIAS DO CAROUSEL)
+               ABA 2: CATEGORIAS DO INÍCIO (CAROUSEL CARDS CRUD)
                ================================================================ -->
           <section class="admin-panel-card" id="tab-categories">
-            <h2 class="admin-card-title">🎠 As 5 Capas que Giram na Primeira Tela</h2>
-            <p class="admin-card-sub">Estes são os 5 grandes cartões da tela inicial (Cruzeiros, Nacionais, Internacionais, Promocionais e Últimas Vagas). Você pode trocar a foto de fundo pelo celular, o nome ou o preço inicial de cada um.</p>
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px;">
+              <div>
+                <h2 class="admin-card-title" style="margin-bottom: 2px;">🎠 Categorias que Giram na Primeira Tela</h2>
+                <p class="admin-card-sub" style="margin-bottom: 0;">Estes são os grandes cartões da tela inicial. Você pode editar os existentes, trocar fotos pelo celular ou clicar em <strong>+ Adicionar Nova Categoria</strong> para criar um novo cartão no Carousel.</p>
+              </div>
+              <button type="button" class="btn btn-gold" id="adm-new-cat-btn">+ Adicionar Nova Categoria</button>
+            </div>
             <div class="admin-pkg-list" id="admin-cat-list"></div>
           </section>
 
@@ -887,7 +892,7 @@
 
   <div class="toast-bar" id="admin-toast">✓ Alterações salvas com sucesso!</div>
 
-  <script src="js/default-config.js?v=4"></script>
-  <script src="js/admin.js?v=4"></script>
+  <script src="js/default-config.js?v=5"></script>
+  <script src="js/admin.js?v=5"></script>
 </body>
 </html>

@@ -452,6 +452,13 @@ img {
   transform: translate3d(155%, 0, -320px) rotateY(-38deg) scale(0.72);
 }
 
+.cat-card-3d[data-offset="hidden"] {
+  z-index: 1;
+  opacity: 0;
+  transform: translate3d(0, 0, -500px) scale(0.5);
+  pointer-events: none;
+}
+
 .cat-card-top {
   display: flex;
   align-items: center;
