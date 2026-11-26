@@ -2,7 +2,6 @@ name = "bellustour-viagens"
 pages_build_output_dir = "public"
 compatibility_date = "2024-11-01"
 
-# Assim que o namespace KV for criado na conta Cloudflare, o ID será preenchido aqui:
-# [[kv_namespaces]]
-# binding = "BELLUSTOUR_KV"
-# id = ""
+[[kv_namespaces]]
+binding = "BELLUSTOUR_KV"
+id = "07e4b8a34c824398bfcf0b2e5719e18d"
