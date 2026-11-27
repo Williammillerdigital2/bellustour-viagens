@@ -5,3 +5,6 @@ compatibility_date = "2024-11-01"
 [[kv_namespaces]]
 binding = "BELLUSTOUR_KV"
 id = "07e4b8a34c824398bfcf0b2e5719e18d"
+
+[vars]
+ADMIN_USER = "matheus"

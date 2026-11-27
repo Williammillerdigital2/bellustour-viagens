@@ -15,8 +15,7 @@ window.BELLUSTOUR_DEFAULT_CONFIG = {
     "instagramUrl": "https://instagram.com/",
     "email": "contato@bellustour.com.br",
     "cnpj": "00.000.000/0001-00",
-    "address": "Atendimento Digital em Todo o Brasil • Especialista em Cruzeiros",
-    "adminPin": "1234"
+    "address": "Atendimento Digital em Todo o Brasil • Especialista em Cruzeiros"
   },
   "popup": {
     "welcomeTitle": "Olá! Seja muito bem-vindo(a)!",

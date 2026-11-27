@@ -2,6 +2,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const PORT = process.env.PORT || 8080;
 const PUBLIC_DIR = path.join(__dirname, "public");
@@ -9,6 +10,18 @@ const UPLOADS_DIR = path.join(PUBLIC_DIR, "assets", "uploads");
 const JSON_PATH = path.join(PUBLIC_DIR, "data", "site-config.json");
 const PREV_JSON_PATH = path.join(PUBLIC_DIR, "data", "site-config.prev.json");
 const JS_CONFIG_PATH = path.join(PUBLIC_DIR, "js", "default-config.js");
+
+function sha256Hex(text) {
+  return crypto.createHash("sha256").update(text).digest("hex");
+}
+
+// Server-only in-memory / env credentials (never exposed in public/data/site-config.json)
+let adminCreds = {
+  user: (process.env.ADMIN_USER || "matheus").toLowerCase(),
+  passHash: sha256Hex(
+    `${(process.env.ADMIN_USER || "matheus").toLowerCase()}:${process.env.ADMIN_PASS || "matheus"}:bellustour_salt_v1`
+  )
+};
 
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
@@ -30,6 +43,95 @@ const MIME = {
 
 const server = http.createServer((req, res) => {
   const urlPath = req.url.split("?")[0];
+
+  // Local API for /api/auth (Mirrors Cloudflare Worker /api/auth)
+  if (urlPath === "/api/auth" && req.method === "POST") {
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", () => {
+      try {
+        const parsed = JSON.parse(body || "{}");
+        const action = parsed.action || "login";
+        const expectedToken = sha256Hex(
+          `session:${adminCreds.user}:${adminCreds.passHash}:bellustour_token_v1`
+        );
+
+        if (action === "verify") {
+          const valid = Boolean(parsed.token && parsed.token === expectedToken);
+          res.writeHead(valid ? 200 : 401, { "Content-Type": MIME[".json"] });
+          return res.end(
+            JSON.stringify({ ok: valid, user: valid ? adminCreds.user : null })
+          );
+        }
+
+        if (action === "login") {
+          const inputUser = String(parsed.username || "").trim().toLowerCase();
+          const inputPass = String(parsed.password || "");
+          const inputHash = sha256Hex(`${inputUser}:${inputPass}:bellustour_salt_v1`);
+          if (inputUser === adminCreds.user && inputHash === adminCreds.passHash) {
+            res.writeHead(200, { "Content-Type": MIME[".json"] });
+            return res.end(
+              JSON.stringify({ ok: true, token: expectedToken, user: adminCreds.user })
+            );
+          }
+          res.writeHead(401, { "Content-Type": MIME[".json"] });
+          return res.end(
+            JSON.stringify({ ok: false, error: "Usuário ou senha incorretos." })
+          );
+        }
+
+        if (action === "change_password") {
+          const currentPass = String(parsed.currentPassword || "");
+          const newUser =
+            String(parsed.newUsername || adminCreds.user).trim().toLowerCase() ||
+            adminCreds.user;
+          const newPass = String(parsed.newPassword || "");
+
+          if (newPass.length < 4) {
+            res.writeHead(400, { "Content-Type": MIME[".json"] });
+            return res.end(
+              JSON.stringify({
+                ok: false,
+                error: "A nova senha deve ter pelo menos 4 caracteres."
+              })
+            );
+          }
+
+          const currentHash = sha256Hex(
+            `${adminCreds.user}:${currentPass}:bellustour_salt_v1`
+          );
+          if (currentHash !== adminCreds.passHash) {
+            res.writeHead(401, { "Content-Type": MIME[".json"] });
+            return res.end(
+              JSON.stringify({
+                ok: false,
+                error: "A senha atual digitada está incorreta."
+              })
+            );
+          }
+
+          adminCreds = {
+            user: newUser,
+            passHash: sha256Hex(`${newUser}:${newPass}:bellustour_salt_v1`)
+          };
+          const newToken = sha256Hex(
+            `session:${adminCreds.user}:${adminCreds.passHash}:bellustour_token_v1`
+          );
+          res.writeHead(200, { "Content-Type": MIME[".json"] });
+          return res.end(
+            JSON.stringify({ ok: true, token: newToken, user: adminCreds.user })
+          );
+        }
+
+        res.writeHead(400, { "Content-Type": MIME[".json"] });
+        res.end(JSON.stringify({ error: "Invalid action" }));
+      } catch (e) {
+        res.writeHead(500, { "Content-Type": MIME[".json"] });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
 
   // Local API persistence for /api/image (Mirrors Cloudflare KV /api/image behavior)
   if (urlPath === "/api/image") {

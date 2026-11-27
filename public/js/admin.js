@@ -9,10 +9,132 @@
 
   const STORAGE_KEY = "bellustour_site_config_v1";
   const PREV_STORAGE_KEY = "bellustour_site_config_prev_v1";
+  const AUTH_TOKEN_KEY = "bellustour_admin_session_v1";
 
   let config = JSON.parse(JSON.stringify(window.BELLUSTOUR_DEFAULT_CONFIG));
   let lastCommittedSnapshot = JSON.stringify(config);
   let activeAdminFilter = "all";
+
+  // --------------------------------------------------------------------------
+  // 0. Server-Side Authentication (/api/auth) & Password Change
+  // --------------------------------------------------------------------------
+  async function checkAuthSession() {
+    const gate = document.getElementById("admin-login-gate");
+    if (!gate) return;
+
+    const savedToken = sessionStorage.getItem(AUTH_TOKEN_KEY) || localStorage.getItem(AUTH_TOKEN_KEY);
+    if (savedToken && location.protocol.startsWith("http")) {
+      try {
+        const res = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "verify", token: savedToken })
+        });
+        if (res.ok) {
+          gate.classList.add("hidden");
+          return;
+        }
+      } catch (_) {}
+    }
+    gate.classList.remove("hidden");
+  }
+
+  function setupAuthEvents() {
+    const loginForm = document.getElementById("admin-login-form");
+    const errEl = document.getElementById("login-error-msg");
+    const gate = document.getElementById("admin-login-gate");
+
+    loginForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (errEl) errEl.style.display = "none";
+
+      const username = getVal("login-username").trim();
+      const password = getVal("login-password");
+
+      try {
+        const res = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "login", username, password })
+        });
+        const data = await res.json();
+        if (res.ok && data.ok && data.token) {
+          sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
+          localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+          gate?.classList.add("hidden");
+          setVal("login-password", "");
+          showToast("🔓 Bem-vindo ao Painel, " + (data.user || "Matheus") + "!");
+        } else {
+          if (errEl) {
+            errEl.textContent = data.error || "Usuário ou senha incorretos.";
+            errEl.style.display = "block";
+          }
+        }
+      } catch (err) {
+        if (errEl) {
+          errEl.textContent = "Erro ao validar login.";
+          errEl.style.display = "block";
+        }
+      }
+    });
+
+    document.getElementById("admin-logout-btn")?.addEventListener("click", () => {
+      sessionStorage.removeItem(AUTH_TOKEN_KEY);
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      gate?.classList.remove("hidden");
+      showToast("🔒 Sessão encerrada com segurança.");
+    });
+
+    document
+      .getElementById("adm-change-pass-btn")
+      ?.addEventListener("click", async () => {
+        const currentPassword = getVal("adm-curr-pass");
+        const newPassword = getVal("adm-new-pass");
+        const feedbackEl = document.getElementById("change-pass-feedback");
+
+        if (!currentPassword || !newPassword) {
+          if (feedbackEl) {
+            feedbackEl.textContent = "⚠️ Preencha a senha atual e a nova senha.";
+            feedbackEl.style.color = "#fda4af";
+          }
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/auth", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "change_password",
+              currentPassword,
+              newPassword
+            })
+          });
+          const data = await res.json();
+          if (res.ok && data.ok) {
+            sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
+            localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+            setVal("adm-curr-pass", "");
+            setVal("adm-new-pass", "");
+            if (feedbackEl) {
+              feedbackEl.textContent = "✓ Senha alterada com sucesso!";
+              feedbackEl.style.color = "#34d399";
+            }
+            showToast("🔑 Nova senha salva com segurança!");
+          } else {
+            if (feedbackEl) {
+              feedbackEl.textContent = "✗ " + (data.error || "Não foi possível trocar a senha.");
+              feedbackEl.style.color = "#fda4af";
+            }
+          }
+        } catch (err) {
+          if (feedbackEl) {
+            feedbackEl.textContent = "✗ Erro de conexão ao trocar senha.";
+            feedbackEl.style.color = "#fda4af";
+          }
+        }
+      });
+  }
 
   const DEFAULT_CAT_ICONS = {
     cruzeiros: "🛳️",
@@ -395,9 +517,9 @@
     listEl.innerHTML = cats
       .map(
         (cat, idx) => `
-        <div class="admin-pkg-item" style="grid-template-columns: 120px 1fr;">
-          <img src="${escapeAttr(cat.image || "")}" alt="${escapeAttr(cat.name)}" style="width: 120px; height: 92px;" />
-          <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="admin-cat-item">
+          <img src="${escapeAttr(cat.image || "")}" alt="${escapeAttr(cat.name)}" />
+          <div style="display: flex; flex-direction: column; gap: 10px; min-width: 0;">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
               <strong style="color: var(--gold-bright); font-size: 0.88rem;">Cartão #${idx + 1}: ${escapeHtml(getCatIcon(cat))} ${escapeHtml(cat.name || "")}</strong>
               ${
@@ -426,12 +548,12 @@
                 <input type="text" class="form-control js-cat-field" data-idx="${idx}" data-field="subtitle" value="${escapeAttr(cat.subtitle || "")}" />
               </div>
             </div>
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
               <label class="mobile-file-label" style="padding: 9px 15px; font-size: 0.8rem;">
                 <span>📱 Trocar Foto de Capa pelo Celular</span>
                 <input type="file" accept="image/*" class="js-cat-file" data-idx="${idx}" />
               </label>
-              <input type="text" class="form-control js-cat-field" data-idx="${idx}" data-field="image" value="${escapeAttr(cat.image || "")}" style="flex: 1; min-width: 180px; font-size: 0.78rem;" placeholder="Ou link da foto" />
+              <input type="text" class="form-control js-cat-field" data-idx="${idx}" data-field="image" value="${escapeAttr(cat.image || "")}" style="flex: 1; min-width: 140px; width: 100%; font-size: 0.78rem;" placeholder="Ou link da foto" />
             </div>
           </div>
         </div>
@@ -837,6 +959,8 @@
   }
 
   async function init() {
+    setupAuthEvents();
+    await checkAuthSession();
     await loadConfig();
     populateFields();
     setupEvents();

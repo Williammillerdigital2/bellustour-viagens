@@ -531,9 +531,75 @@ async function runTests() {
     // [4/4] Admin Panel (/admin.html) & Rollback Verification
     // ------------------------------------------------------------------------
     console.log("\n[4/4] Admin Panel (/admin.html) & Rollback System Verification");
+    await page.setViewport(1440, 900, false);
     await page.goto(`${BASE_URL}/admin.html`);
+
+    // Regression #17: Secure Worker Auth (/api/auth) Login (matheus/matheus), No password in site-config.json, & Password Change
+    assert(
+      !configData.brand.adminPin && !configData.brand.password,
+      "REGRESSION #17A (Zero Credentials in Public JSON): No password or adminPin is exposed in public site-config.json"
+    );
+
+    const authAndPasswordChangeCheck = await page.eval(async () => {
+      const gate = document.getElementById("admin-login-gate");
+      const gateVisibleBeforeLogin = !gate.classList.contains("hidden");
+
+      const badRes = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "login", username: "matheus", password: "wrong_password" })
+      });
+      const badRejected = badRes.status === 401;
+
+      document.getElementById("login-username").value = "matheus";
+      document.getElementById("login-password").value = "matheus";
+      document
+        .getElementById("admin-login-form")
+        .dispatchEvent(new Event("submit", { cancelable: true }));
+      await new Promise((r) => setTimeout(r, 200));
+      const gateHiddenAfterLogin = gate.classList.contains("hidden");
+
+      const changeRes1 = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "change_password",
+          currentPassword: "matheus",
+          newPassword: "nova1234"
+        })
+      });
+      const changeOk1 = changeRes1.status === 200;
+
+      const changeRes2 = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "change_password",
+          currentPassword: "nova1234",
+          newPassword: "matheus"
+        })
+      });
+      const changeOk2 = changeRes2.status === 200;
+
+      return {
+        gateVisibleBeforeLogin,
+        badRejected,
+        gateHiddenAfterLogin,
+        passwordChangeWorks: changeOk1 && changeOk2
+      };
+    });
+
+    assert(
+      authAndPasswordChangeCheck.gateVisibleBeforeLogin &&
+        authAndPasswordChangeCheck.badRejected &&
+        authAndPasswordChangeCheck.gateHiddenAfterLogin &&
+        authAndPasswordChangeCheck.passwordChangeWorks,
+      "REGRESSION #17B (Worker Auth & Password Change): Login gate blocks unauthenticated access, validates matheus/matheus via /api/auth, and supports changing password",
+      JSON.stringify(authAndPasswordChangeCheck)
+    );
+
     const adminCheck = await page.eval(async () => {
-      const catInputs = document.querySelectorAll("#admin-cat-list .admin-pkg-item");
+      const catInputs = document.querySelectorAll("#admin-cat-list .admin-cat-item");
       const pkgItems = document.querySelectorAll("#admin-pkg-list .admin-pkg-item");
       const waInput = document.getElementById("adm-whatsapp");
       const headerBtnTextInput = document.getElementById("adm-header-btn-text");
@@ -647,13 +713,13 @@ async function runTests() {
     const adminHeaderNoOverlapCheck = await page.eval(() => {
       const topHeader = document.querySelector(".admin-top-header");
       const topHeaderPos = topHeader ? getComputedStyle(topHeader).position : "fixed";
-      const topButtonsCount = topHeader
-        ? topHeader.querySelectorAll("button, .btn").length
-        : 99;
+      const topHeaderText = topHeader ? topHeader.textContent : "";
+      const hasDuplicateSaveOrViewInHeader =
+        topHeaderText.includes("Salvar Tudo") || topHeaderText.includes("Ver Site");
       const saveButtonsTotal = document.querySelectorAll("#admin-save-all-btn, #admin-mobile-save-btn").length;
       return {
         notFixedOverlapping: topHeaderPos !== "fixed",
-        noTopActionButtons: topButtonsCount === 0,
+        noTopActionButtons: !hasDuplicateSaveOrViewInHeader,
         singleSaveButtonOnly: saveButtonsTotal === 1
       };
     });
@@ -764,11 +830,11 @@ async function runTests() {
       const addCatBtn = document.getElementById("adm-new-cat-btn");
       if (!addCatBtn) return { ok: false };
 
-      const beforeCount = document.querySelectorAll("#admin-cat-list .admin-pkg-item").length;
+      const beforeCount = document.querySelectorAll("#admin-cat-list .admin-cat-item").length;
       addCatBtn.click();
       await new Promise((r) => setTimeout(r, 150));
 
-      const afterAddCount = document.querySelectorAll("#admin-cat-list .admin-pkg-item").length;
+      const afterAddCount = document.querySelectorAll("#admin-cat-list .admin-cat-item").length;
       const pkgSelectCount = document.getElementById("edit-pkg-category")?.options.length || 0;
       const filterPillsCount = document.querySelectorAll(
         "#admin-pkg-filter-pills .admin-filter-pill"
@@ -779,7 +845,7 @@ async function runTests() {
       delBtns[delBtns.length - 1]?.click();
       await new Promise((r) => setTimeout(r, 150));
 
-      const afterDelCount = document.querySelectorAll("#admin-cat-list .admin-pkg-item").length;
+      const afterDelCount = document.querySelectorAll("#admin-cat-list .admin-cat-item").length;
 
       return {
         ok:
@@ -799,6 +865,57 @@ async function runTests() {
       "REGRESSION #16 (Add & Delete Carousel Categories in Admin): Clicking '+ Adicionar Nova Categoria' creates a new carousel card, syncs package category selectors & filters dynamically, and supports deletion",
       JSON.stringify(dynamicCategoryCrudCheck)
     );
+
+    // Regression #18: Admin Mobile Responsiveness across ALL 4 Tabs (Zero Right-Edge Clipping / Zero Horizontal Overflow on 360x740 & 390x844)
+    for (const mobW of [360, 390]) {
+      await page.setViewport(mobW, 740, true);
+      await new Promise((r) => setTimeout(r, 140));
+      const mobTabsOverflowCheck = await page.eval(async () => {
+        const tabs = ["tab-packages", "tab-categories", "tab-whatsapp", "tab-popup"];
+        const results = [];
+        for (const tabId of tabs) {
+          const navBtn = document.querySelector(`.admin-nav-btn[data-tab="${tabId}"]`);
+          navBtn?.click();
+          await new Promise((r) => setTimeout(r, 60));
+
+          const docEl = document.documentElement;
+          const banner = document.querySelector(".admin-welcome-banner")?.getBoundingClientRect();
+          const sidebar = document.querySelector(".admin-sidebar")?.getBoundingClientRect();
+          const card = document.getElementById(tabId)?.getBoundingClientRect();
+
+          const winW = window.innerWidth;
+          const ok =
+            docEl.scrollWidth <= winW + 1 &&
+            banner &&
+            banner.right <= winW &&
+            banner.left >= 0 &&
+            sidebar &&
+            sidebar.right <= winW &&
+            sidebar.left >= 0 &&
+            card &&
+            card.right <= winW &&
+            card.left >= 0;
+
+          results.push({
+            tabId,
+            ok,
+            scrollW: docEl.scrollWidth,
+            winW,
+            cardRight: Math.round(card?.right || 0)
+          });
+        }
+        return {
+          allTabsFit: results.every((r) => r.ok),
+          results
+        };
+      });
+
+      assert(
+        mobTabsOverflowCheck.allTabsFit,
+        `REGRESSION #18 (Admin Mobile Zero Horizontal Clipping at ${mobW}px): All 4 Admin tabs, welcome banner, and sidebar fit 100% within ${mobW}px mobile viewport without right-edge cutoff`,
+        JSON.stringify(mobTabsOverflowCheck)
+      );
+    }
 
     page.close();
   } finally {
