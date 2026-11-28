@@ -872,7 +872,13 @@ async function runTests() {
       await page.setViewport(mobW, 740, true);
       await new Promise((r) => setTimeout(r, 140));
       const mobTabsOverflowCheck = await page.eval(async () => {
-        const tabs = ["tab-packages", "tab-categories", "tab-whatsapp", "tab-popup"];
+        const tabs = [
+          "tab-packages",
+          "tab-categories",
+          "tab-whatsapp",
+          "tab-popup",
+          "tab-institutional"
+        ];
         const results = [];
         for (const tabId of tabs) {
           const navBtn = document.querySelector(`.admin-nav-btn[data-tab="${tabId}"]`);
@@ -946,6 +952,102 @@ async function runTests() {
       redundantRoutesCheck.all200,
       "REGRESSION #19 (Zero-404 Redundant Routing): All friendly aliases (/admin, /admin/, /painel, /privacidade, /termos, /cruzeiros) and unknown routes return HTTP 200 OK without 404",
       JSON.stringify(redundantRoutesCheck)
+    );
+
+    // Regression #20: 3-Column Institutional Footer & All 5 Google-Compliant Institutional Pages (Sobre Nós, Condições de Uso, Condições Gerais, Privacidade, Código de Ética)
+    await page.setViewport(1440, 900, false);
+    await page.goto(BASE_URL);
+    const footerAndPagesCheck = await page.eval(async () => {
+      const cols = document.querySelectorAll(".site-footer .footer-col");
+      const footerText = document.querySelector(".site-footer")?.textContent || "";
+      const hasEmail = footerText.includes("matheus.belluco01@live.com");
+      const hasCnpj = footerText.includes("70.339.841/0001-03");
+      const hasHours =
+        footerText.includes("Segunda à Sexta: 09h às 20h") &&
+        footerText.includes("Sábado das 09h às 16h");
+      const noFranchiseOrStores =
+        !footerText.toLowerCase().includes("franqueado") &&
+        !footerText.toLowerCase().includes("encontre uma loja");
+
+      const instPages = [
+        "/about.html",
+        "/sobre-nos",
+        "/terms.html",
+        "/conditions.html",
+        "/condicoes-gerais",
+        "/privacy.html",
+        "/ethics.html",
+        "/codigo-de-etica"
+      ];
+      const pageStatuses = [];
+      for (const p of instPages) {
+        const r = await fetch(p);
+        const html = await r.text();
+        pageStatuses.push({
+          page: p,
+          ok: r.status === 200 && html.includes("Bellustour")
+        });
+      }
+
+      return {
+        threeCols: cols.length === 3,
+        hasEmail,
+        hasCnpj,
+        hasHours,
+        noFranchiseOrStores,
+        allInstPagesOk: pageStatuses.every((s) => s.ok),
+        pageStatuses
+      };
+    });
+
+    assert(
+      footerAndPagesCheck.threeCols &&
+        footerAndPagesCheck.hasEmail &&
+        footerAndPagesCheck.hasCnpj &&
+        footerAndPagesCheck.hasHours &&
+        footerAndPagesCheck.noFranchiseOrStores &&
+        footerAndPagesCheck.allInstPagesOk,
+      "REGRESSION #20 (3-Column Institutional Footer & 5 Google-Compliant Pages): Footer displays 3 columns (Bellustour Brasil, Central de atendimento with hours & WhatsApp, Termos), no franchise/store links, and all 5 institutional pages return HTTP 200",
+      JSON.stringify(footerAndPagesCheck)
+    );
+
+    // Regression #21: 100% of Footer, Service Hours, Sobre Nós, and Legal Policy Page texts must be editable in Admin Tab 5 (#tab-institutional)
+    await page.goto(`${BASE_URL}/admin.html`);
+    const instAdminEditableCheck = await page.eval(() => {
+      const requiredInstFields = [
+        "adm-email",
+        "adm-cnpj",
+        "adm-hours-weekdays",
+        "adm-hours-saturday",
+        "adm-inst-col1-title",
+        "adm-inst-col2-title",
+        "adm-inst-col2-sub",
+        "adm-inst-phone",
+        "adm-inst-wa-text",
+        "adm-inst-col3-title",
+        "adm-inst-about-title",
+        "adm-inst-about-modality",
+        "adm-inst-about-text1",
+        "adm-inst-about-text2",
+        "adm-inst-terms-intro",
+        "adm-inst-conditions-intro",
+        "adm-inst-privacy-intro",
+        "adm-inst-ethics-intro"
+      ];
+      const missing = requiredInstFields.filter(
+        (id) => !document.getElementById(id) || !document.getElementById(id).value
+      );
+      return {
+        allPopulated: missing.length === 0,
+        checkedCount: requiredInstFields.length,
+        missing
+      };
+    });
+
+    assert(
+      instAdminEditableCheck.allPopulated,
+      "REGRESSION #21 (100% Footer & Institutional Pages Editable in Admin): All 18 footer, service hours, Sobre Nós, and policy page fields are present and editable in Admin Panel",
+      JSON.stringify(instAdminEditableCheck)
     );
 
     page.close();

@@ -562,6 +562,14 @@
               <small>Texto do Matheus e voltar atrás</small>
             </div>
           </button>
+
+          <button type="button" class="admin-nav-btn" data-tab="tab-institutional">
+            <span>📄</span>
+            <div>
+              <span>5. Rodapé & Sobre Nós</span>
+              <small>Horários, Sobre Nós e Políticas</small>
+            </div>
+          </button>
         </aside>
 
         <!-- MAIN CONTENT PANELS -->
@@ -803,12 +811,23 @@
 
               <div class="form-row-2">
                 <div class="form-group">
-                  <label for="adm-email">Seu E-mail de Contato</label>
+                  <label for="adm-email">Seu E-mail de Contato (Rodapé & Sobre Nós)</label>
                   <input type="email" id="adm-email" class="form-control" />
                 </div>
                 <div class="form-group">
-                  <label for="adm-cnpj">CNPJ da Agência</label>
+                  <label for="adm-cnpj">CNPJ da Agência (Rodapé & Sobre Nós)</label>
                   <input type="text" id="adm-cnpj" class="form-control" />
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="adm-hours-weekdays">🕒 Horário de Atendimento (Dias de Semana)</label>
+                  <input type="text" id="adm-hours-weekdays" class="form-control" placeholder="Ex: Segunda à Sexta: 09h às 20h" />
+                </div>
+                <div class="form-group">
+                  <label for="adm-hours-saturday">🕒 Horário de Atendimento (Sábado / Fim de Semana)</label>
+                  <input type="text" id="adm-hours-saturday" class="form-control" placeholder="Ex: Sábado das 09h às 16h" />
                 </div>
               </div>
 
@@ -1017,6 +1036,108 @@
               </div>
             </div>
           </section>
+
+          <!-- ================================================================
+               ABA 5: RODAPÉ DE 3 COLUNAS, SOBRE NÓS & POLÍTICAS LEGAIS
+               ================================================================ -->
+          <section class="admin-panel-card" id="tab-institutional">
+            <h2 class="admin-card-title">📄 Rodapé, Horários, Sobre Nós & Políticas</h2>
+            <p class="admin-card-sub">Personalize abaixo todas as informações das 3 colunas do rodapé, horários de atendimento, telefone exibido e os textos da página <strong>Sobre Nós</strong> e das páginas de <strong>Termos e Políticas</strong>:</p>
+
+            <div class="quote-form">
+              <!-- BLOCO 1: RODAPÉ 3 COLUNAS & HORÁRIOS -->
+              <div style="padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle);">
+                <h3 style="font-size: 0.96rem; font-weight: 800; color: var(--gold-bright); margin-bottom: 12px;">🕒 1. Rodapé & Central de Atendimento</h3>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="adm-inst-col1-title">Título da 1ª Coluna do Rodapé</label>
+                    <input type="text" id="adm-inst-col1-title" class="form-control" placeholder="Ex: Bellustour Brasil" />
+                  </div>
+                  <div class="form-group">
+                    <label for="adm-inst-col2-title">Título da 2ª Coluna do Rodapé</label>
+                    <input type="text" id="adm-inst-col2-title" class="form-control" placeholder="Ex: Central de atendimento" />
+                  </div>
+                </div>
+
+                <div class="form-row-2" style="margin-top: 10px;">
+                  <div class="form-group">
+                    <label for="adm-inst-col2-sub">Subtítulo da Central de Atendimento</label>
+                    <input type="text" id="adm-inst-col2-sub" class="form-control" placeholder="Ex: Central de relacionamento com o cliente" />
+                  </div>
+                  <div class="form-group">
+                    <label for="adm-inst-phone">Telefone exibido no Rodapé e Sobre Nós</label>
+                    <input type="text" id="adm-inst-phone" class="form-control" placeholder="Ex: 11 97665-5534" />
+                  </div>
+                </div>
+
+                <div class="form-row-2" style="margin-top: 10px;">
+                  <div class="form-group">
+                    <label for="adm-inst-wa-text">Texto do Link de WhatsApp no Rodapé</label>
+                    <input type="text" id="adm-inst-wa-text" class="form-control" placeholder="Ex: Atendimento por WhatsApp" />
+                  </div>
+                  <div class="form-group">
+                    <label for="adm-inst-col3-title">Título da 3ª Coluna do Rodapé</label>
+                    <input type="text" id="adm-inst-col3-title" class="form-control" placeholder="Ex: Termos" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- BLOCO 2: PÁGINA SOBRE NÓS -->
+              <div style="padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle);">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+                  <h3 style="font-size: 0.96rem; font-weight: 800; color: var(--ocean-bright);">🏢 2. Textos da Página "Sobre Nós" (/sobre-nos)</h3>
+                  <a href="about.html" target="_blank" class="btn btn-glass btn-sm" style="font-size: 0.74rem; padding: 5px 11px;">👁️ Ver página Sobre Nós ↗</a>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="adm-inst-about-title">Título da Página Sobre Nós</label>
+                    <input type="text" id="adm-inst-about-title" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label for="adm-inst-about-modality">Modalidade de Atendimento</label>
+                    <input type="text" id="adm-inst-about-modality" class="form-control" placeholder="Ex: Agência de Turismo Digital (Atendimento Nacional)" />
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 10px;">
+                  <label for="adm-inst-about-text1">1º Parágrafo de Apresentação da Bellustour</label>
+                  <textarea id="adm-inst-about-text1" rows="3" class="form-control"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top: 10px;">
+                  <label for="adm-inst-about-text2">2º Parágrafo (Atendimento Digital Personalizado)</label>
+                  <textarea id="adm-inst-about-text2" rows="3" class="form-control"></textarea>
+                </div>
+              </div>
+
+              <!-- BLOCO 3: PÁGINAS DE TERMOS, CONDIÇÕES, PRIVACIDADE E ÉTICA -->
+              <div style="padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle);">
+                <h3 style="font-size: 0.96rem; font-weight: 800; color: var(--gold-bright); margin-bottom: 12px;">⚖️ 3. Textos Principais das Páginas de Termos e Políticas</h3>
+
+                <div class="form-group">
+                  <label for="adm-inst-terms-intro">Texto de Introdução — Condições de Uso do Site (<a href="terms.html" target="_blank" style="color: var(--ocean-bright);">ver página ↗</a>)</label>
+                  <textarea id="adm-inst-terms-intro" rows="2" class="form-control"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top: 10px;">
+                  <label for="adm-inst-conditions-intro">Texto de Introdução — Condições Gerais (<a href="conditions.html" target="_blank" style="color: var(--ocean-bright);">ver página ↗</a>)</label>
+                  <textarea id="adm-inst-conditions-intro" rows="2" class="form-control"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top: 10px;">
+                  <label for="adm-inst-privacy-intro">Texto de Introdução — Política de Privacidade LGPD (<a href="privacy.html" target="_blank" style="color: var(--ocean-bright);">ver página ↗</a>)</label>
+                  <textarea id="adm-inst-privacy-intro" rows="2" class="form-control"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top: 10px;">
+                  <label for="adm-inst-ethics-intro">Texto de Introdução — Código de Conduta Ética (<a href="ethics.html" target="_blank" style="color: var(--ocean-bright);">ver página ↗</a>)</label>
+                  <textarea id="adm-inst-ethics-intro" rows="2" class="form-control"></textarea>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
@@ -1030,7 +1151,7 @@
 
   <div class="toast-bar" id="admin-toast">✓ Alterações salvas com sucesso!</div>
 
-  <script src="js/default-config.js?v=6"></script>
-  <script src="js/admin.js?v=6"></script>
+  <script src="js/default-config.js?v=7"></script>
+  <script src="js/admin.js?v=7"></script>
 </body>
 </html>

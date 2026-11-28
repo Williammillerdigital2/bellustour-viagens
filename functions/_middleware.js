@@ -18,15 +18,24 @@ export async function onRequest(context) {
     return next();
   }
 
-  // 2. Friendly aliases for Admin, Privacy & Terms
+  // 2. Friendly aliases for Admin, About, Privacy, Terms, General Conditions & Ethics
   if (path === "/admin" || path === "/painel" || path === "/login") {
     return env.ASSETS.fetch(new URL("/admin.html" + url.search, url.origin));
+  }
+  if (path === "/sobre-nos" || path === "/sobre" || path === "/about") {
+    return env.ASSETS.fetch(new URL("/about.html" + url.search, url.origin));
   }
   if (path === "/privacidade" || path === "/politica-de-privacidade" || path === "/privacy") {
     return env.ASSETS.fetch(new URL("/privacy.html" + url.search, url.origin));
   }
-  if (path === "/termos" || path === "/termos-de-uso" || path === "/terms") {
+  if (path === "/termos" || path === "/termos-de-uso" || path === "/condicoes-de-uso" || path === "/terms") {
     return env.ASSETS.fetch(new URL("/terms.html" + url.search, url.origin));
+  }
+  if (path === "/condicoes-gerais" || path === "/condicoes" || path === "/conditions") {
+    return env.ASSETS.fetch(new URL("/conditions.html" + url.search, url.origin));
+  }
+  if (path === "/codigo-de-etica" || path === "/conduta-etica" || path === "/etica" || path === "/ethics") {
+    return env.ASSETS.fetch(new URL("/ethics.html" + url.search, url.origin));
   }
 
   // 3. Try serving the requested static asset

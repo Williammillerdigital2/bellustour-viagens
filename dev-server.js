@@ -241,10 +241,16 @@ const server = http.createServer((req, res) => {
     resolvedRel = "index.html";
   } else if (cleanPath === "/admin" || cleanPath === "/painel" || cleanPath === "/login") {
     resolvedRel = "admin.html";
+  } else if (cleanPath === "/sobre-nos" || cleanPath === "/sobre" || cleanPath === "/about") {
+    resolvedRel = "about.html";
   } else if (cleanPath === "/privacidade" || cleanPath === "/politica-de-privacidade" || cleanPath === "/privacy") {
     resolvedRel = "privacy.html";
-  } else if (cleanPath === "/termos" || cleanPath === "/termos-de-uso" || cleanPath === "/terms") {
+  } else if (cleanPath === "/termos" || cleanPath === "/termos-de-uso" || cleanPath === "/condicoes-de-uso" || cleanPath === "/terms") {
     resolvedRel = "terms.html";
+  } else if (cleanPath === "/condicoes-gerais" || cleanPath === "/condicoes" || cleanPath === "/conditions") {
+    resolvedRel = "conditions.html";
+  } else if (cleanPath === "/codigo-de-etica" || cleanPath === "/conduta-etica" || cleanPath === "/etica" || cleanPath === "/ethics") {
+    resolvedRel = "ethics.html";
   } else {
     resolvedRel = cleanPath.replace(/^\/+/, "");
   }

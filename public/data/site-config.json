@@ -7,14 +7,17 @@
     "heroTitle": "Escolha sua próxima experiência",
     "logoMode": "refined",
     "logoUrl": "assets/logo.jpeg",
-    "whatsappNumber": "+5511973886395",
+    "whatsappNumber": "+55 11 97665-5534",
     "headerButtonText": "Fale Conosco",
-    "headerButtonWhatsapp": "+5511973886395",
+    "headerButtonWhatsapp": "+55 11 97665-5534",
     "headerWhatsappMessage": "Olá Matheus! Vim pelo site da *Bellustour* e gostaria de atendimento 🛳️✨",
     "instagramUrl": "https://instagram.com/",
-    "email": "contato@bellustour.com.br",
-    "cnpj": "00.000.000/0001-00",
-    "address": "Atendimento Digital em Todo o Brasil • Especialista em Cruzeiros"
+    "email": "matheus.belluco01@live.com",
+    "cnpj": "70.339.841/0001-03",
+    "address": "Atendimento Digital em Todo o Brasil • Especialista em Cruzeiros",
+    "hoursWeekdays": "Segunda à Sexta: 09h às 20h",
+    "hoursSaturday": "Sábado das 09h às 16h",
+    "phoneDisplay": "11 97665-5534"
   },
   "popup": {
     "welcomeTitle": "Olá! Seja muito bem-vindo(a)!",
@@ -300,5 +303,23 @@
       "urgencyTag": "Tarifa de fechamento de navio",
       "image": "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?auto=format&fit=crop&w=1200&q=85"
     }
-  ]
+  ],
+  "institutional": {
+    "footerCol1Title": "Bellustour Brasil",
+    "footerCol2Title": "Central de atendimento",
+    "footerCol2Subtitle": "Central de relacionamento com o cliente",
+    "footerCol2WaText": "Atendimento por WhatsApp",
+    "footerCol3Title": "Termos",
+    "phoneDisplay": "11 97665-5534",
+    "hoursWeekdays": "Segunda à Sexta: 09h às 20h",
+    "hoursSaturday": "Sábado das 09h às 16h",
+    "aboutTitle": "Sobre a Bellustour Viagens & Cruzeiros",
+    "aboutText1": "A Bellustour é uma agência de viagens e turismo com atuação 100% digital em todo o Brasil, fundada e conduzida pelo especialista Matheus. Nosso foco principal é a curadoria de Cruzeiros Marítimos Nacionais e Internacionais (com saídas de Santos, Rio de Janeiro, Salvador, Maceió, Itajaí, Rio da Prata e Caribe), além de pacotes completos para resorts nacionais, destinos internacionais e oportunidades promocionais.",
+    "aboutText2": "Operamos em formato digital direto e personalizado — sem intermediação de franquias ou lojas físicas — o que nos permite oferecer atendimento consultivo ágil pelo WhatsApp, acompanhamento individualizado antes, durante e após o embarque, e acesso rápido às melhores tarifas e cabines das principais companhias marítimas e aéreas.",
+    "aboutModality": "Agência de Turismo Digital (Atendimento Nacional)",
+    "termsIntro": "Ao navegar neste site e utilizar nossa ferramenta de cotação via WhatsApp, o usuário declara ter lido, compreendido e aceitado as presentes Condições de Uso. Os valores exibidos nos cartões de pacotes representam tarifas referenciais pesquisadas junto às companhias marítimas, aéreas e redes hoteleiras parceiras, sujeitas a confirmação de disponibilidade no ato do atendimento.",
+    "conditionsIntro": "A Bellustour atua como agência intermediadora entre o viajante e os fornecedores finais dos serviços turísticos (companhias marítimas de cruzeiros, companhias aéreas, hotéis, resorts e seguradoras), em conformidade com a Lei Geral do Turismo (Lei nº 11.771/2008) e o Código de Defesa do Consumidor (Lei nº 8.078/1990).",
+    "privacyIntro": "A Bellustour compromete-se com a segurança e a transparência no tratamento das informações dos usuários, atuando em estrita conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD) e com as diretrizes de privacidade do Google Ads. Jamais comercializamos ou cedemos dados pessoais a terceiros para fins publicitários.",
+    "ethicsIntro": "A Bellustour pauta toda a sua atuação digital pelos mais altos padrões de transparência tarifária (zero taxas ocultas), turismo responsável com fornecedores homologados e respeito integral a cada viajante."
+  }
 }

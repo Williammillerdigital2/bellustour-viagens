@@ -260,6 +260,8 @@
     setVal("adm-hero-title", b.heroTitle || "");
     setVal("adm-email", b.email || "");
     setVal("adm-cnpj", b.cnpj || "");
+    setVal("adm-hours-weekdays", b.hoursWeekdays || "Segunda à Sexta: 09h às 20h");
+    setVal("adm-hours-saturday", b.hoursSaturday || "Sábado das 09h às 16h");
     setVal("adm-address", b.address || "");
 
     setVal("adm-pop-title", p.welcomeTitle || "");
@@ -291,6 +293,22 @@
     setVal("adm-pop-btn", p.buttonText || "Cotação");
     setVal("adm-pop-wa-template", p.whatsappTemplate || getDefaultWaTemplate());
 
+    const inst = config.institutional || {};
+    setVal("adm-inst-col1-title", inst.footerCol1Title || "Bellustour Brasil");
+    setVal("adm-inst-col2-title", inst.footerCol2Title || "Central de atendimento");
+    setVal("adm-inst-col2-sub", inst.footerCol2Subtitle || "Central de relacionamento com o cliente");
+    setVal("adm-inst-phone", inst.phoneDisplay || b.phoneDisplay || "11 97665-5534");
+    setVal("adm-inst-wa-text", inst.footerCol2WaText || "Atendimento por WhatsApp");
+    setVal("adm-inst-col3-title", inst.footerCol3Title || "Termos");
+    setVal("adm-inst-about-title", inst.aboutTitle || "Sobre a Bellustour Viagens & Cruzeiros");
+    setVal("adm-inst-about-modality", inst.aboutModality || "Agência de Turismo Digital (Atendimento Nacional)");
+    setVal("adm-inst-about-text1", inst.aboutText1 || "");
+    setVal("adm-inst-about-text2", inst.aboutText2 || "");
+    setVal("adm-inst-terms-intro", inst.termsIntro || "");
+    setVal("adm-inst-conditions-intro", inst.conditionsIntro || "");
+    setVal("adm-inst-privacy-intro", inst.privacyIntro || "");
+    setVal("adm-inst-ethics-intro", inst.ethicsIntro || "");
+
     syncDynamicCategoryControls();
     renderCategoriesList();
     renderPackagesList();
@@ -313,6 +331,8 @@
     config.brand.heroTitle = getVal("adm-hero-title").trim();
     config.brand.email = getVal("adm-email").trim();
     config.brand.cnpj = getVal("adm-cnpj").trim();
+    config.brand.hoursWeekdays = getVal("adm-hours-weekdays").trim() || "Segunda à Sexta: 09h às 20h";
+    config.brand.hoursSaturday = getVal("adm-hours-saturday").trim() || "Sábado das 09h às 16h";
     config.brand.address = getVal("adm-address").trim();
 
     config.popup = config.popup || {};
@@ -357,6 +377,24 @@
     config.popup.buttonText = getVal("adm-pop-btn").trim() || "Cotação";
     config.popup.whatsappTemplate =
       getVal("adm-pop-wa-template").trim() || getDefaultWaTemplate();
+
+    config.institutional = config.institutional || {};
+    config.institutional.footerCol1Title = getVal("adm-inst-col1-title").trim() || "Bellustour Brasil";
+    config.institutional.footerCol2Title = getVal("adm-inst-col2-title").trim() || "Central de atendimento";
+    config.institutional.footerCol2Subtitle = getVal("adm-inst-col2-sub").trim() || "Central de relacionamento com o cliente";
+    config.institutional.phoneDisplay = getVal("adm-inst-phone").trim() || "11 97665-5534";
+    config.institutional.footerCol2WaText = getVal("adm-inst-wa-text").trim() || "Atendimento por WhatsApp";
+    config.institutional.footerCol3Title = getVal("adm-inst-col3-title").trim() || "Termos";
+    config.institutional.hoursWeekdays = config.brand.hoursWeekdays;
+    config.institutional.hoursSaturday = config.brand.hoursSaturday;
+    config.institutional.aboutTitle = getVal("adm-inst-about-title").trim() || "Sobre a Bellustour Viagens & Cruzeiros";
+    config.institutional.aboutModality = getVal("adm-inst-about-modality").trim() || "Agência de Turismo Digital (Atendimento Nacional)";
+    config.institutional.aboutText1 = getVal("adm-inst-about-text1").trim();
+    config.institutional.aboutText2 = getVal("adm-inst-about-text2").trim();
+    config.institutional.termsIntro = getVal("adm-inst-terms-intro").trim();
+    config.institutional.conditionsIntro = getVal("adm-inst-conditions-intro").trim();
+    config.institutional.privacyIntro = getVal("adm-inst-privacy-intro").trim();
+    config.institutional.ethicsIntro = getVal("adm-inst-ethics-intro").trim();
   }
 
   function getDefaultWaTemplate() {

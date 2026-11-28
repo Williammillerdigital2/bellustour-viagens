@@ -97,6 +97,49 @@
     setText("hero-badge-text", b.heroBadge || "BELLUSTOUR • CURADORIA POR MATHEUS");
     setText("header-btn-text", b.headerButtonText || "Fale Conosco");
 
+    // Populate 3-column Institutional Footer dynamically from config
+    const inst = siteConfig.institutional || {};
+    const rawWa = (b.whatsappNumber || b.headerButtonWhatsapp || "5511976655534").replace(/\D/g, "");
+    const waHref = rawWa ? `https://wa.me/${rawWa}?text=${encodeURIComponent(b.headerWhatsappMessage || "Olá Matheus! Vim pelo site da Bellustour e gostaria de atendimento.")}` : "#top";
+    const displayPhone =
+      inst.phoneDisplay ||
+      b.phoneDisplay ||
+      (rawWa.length >= 12
+        ? `${rawWa.slice(2, 4)} ${rawWa.slice(4, 9)}-${rawWa.slice(9)}`
+        : b.whatsappNumber || "11 97665-5534");
+
+    setText("footer-col1-title", inst.footerCol1Title || "Bellustour Brasil");
+    setText("footer-col2-title", inst.footerCol2Title || "Central de atendimento");
+    setText("footer-col2-subtitle", inst.footerCol2Subtitle || "Central de relacionamento com o cliente");
+    setText("footer-col3-title", inst.footerCol3Title || "Termos");
+
+    const emailAddr = b.email || "matheus.belluco01@live.com";
+    const emailLink = document.getElementById("footer-email-link");
+    if (emailLink) {
+      emailLink.textContent = emailAddr;
+      emailLink.href = `mailto:${emailAddr}`;
+    }
+
+    const phoneLink = document.getElementById("footer-phone-link");
+    if (phoneLink) {
+      phoneLink.textContent = displayPhone;
+      phoneLink.href = waHref;
+    }
+
+    const waLink = document.getElementById("footer-wa-link");
+    if (waLink) {
+      waLink.href = waHref;
+      waLink.textContent = inst.footerCol2WaText || "Atendimento por WhatsApp";
+    }
+
+    setText("footer-cnpj-text", b.cnpj || "70.339.841/0001-03");
+    setText("footer-cnpj-bottom", b.cnpj || "70.339.841/0001-03");
+    setText("footer-hours-weekdays", inst.hoursWeekdays || b.hoursWeekdays || "Segunda à Sexta: 09h às 20h");
+    setText("footer-hours-saturday", inst.hoursSaturday || b.hoursSaturday || "Sábado das 09h às 16h");
+    setText("footer-brand-copy", (b.name || "Bellustour") + " Viagens & Cruzeiros");
+    setText("footer-address-text", b.address || "Atendimento Digital em Todo o Brasil • Especialista em Cruzeiros");
+    setText("footer-year", new Date().getFullYear());
+
     setText("popup-welcome-title", p.welcomeTitle || "Olá! Seja muito bem-vindo(a)!");
     setText("popup-welcome-intro", p.welcomeIntro || "Aqui é o Matheus, seu especialista em cruzeiros 😎✨");
     setText("popup-welcome-pitch", p.welcomePitch || "");
@@ -588,15 +631,14 @@
         }
       });
 
-      // Mouse wheel switches categories smoothly on the single-screen stage
+      // Horizontal wheel/trackpad gesture switches categories; vertical wheel scrolls smoothly to the footer
       let wheelLock = false;
       viewport.addEventListener(
         "wheel",
         (e) => {
-          const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-          if (Math.abs(delta) > 22 && !wheelLock) {
+          if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 20 && !wheelLock) {
             wheelLock = true;
-            stepCategoryCarousel(delta > 0 ? 1 : -1);
+            stepCategoryCarousel(e.deltaX > 0 ? 1 : -1);
             setTimeout(() => {
               wheelLock = false;
             }, 400);
