@@ -300,6 +300,9 @@
     setVal("adm-inst-phone", inst.phoneDisplay || b.phoneDisplay || "11 97665-5534");
     setVal("adm-inst-wa-text", inst.footerCol2WaText || "Atendimento por WhatsApp");
     setVal("adm-inst-col3-title", inst.footerCol3Title || "Termos");
+    setVal("adm-inst-email", b.email || "matheus.belluco01@live.com");
+    setVal("adm-inst-hours", inst.hoursWeekdays || b.hoursWeekdays || "Atendimento 24 horas — Todos os dias");
+    setVal("adm-inst-cnpj", b.cnpj || "70.339.841/0001-03");
     setVal("adm-inst-about-title", inst.aboutTitle || "Sobre a Bellustour Viagens & Cruzeiros");
     setVal("adm-inst-about-modality", inst.aboutModality || "Agência de Turismo Digital (Atendimento Nacional)");
     setVal("adm-inst-about-text1", inst.aboutText1 || "");
@@ -941,6 +944,21 @@
       ?.addEventListener("click", () => {
         performRollback();
       });
+
+    // Live mirror between Tab 3 and Tab 5 shared inputs (Email, CNPJ, Hours)
+    const syncPairs = [
+      ["adm-email", "adm-inst-email"],
+      ["adm-cnpj", "adm-inst-cnpj"],
+      ["adm-hours-weekdays", "adm-inst-hours"]
+    ];
+    for (const [idA, idB] of syncPairs) {
+      const elA = document.getElementById(idA);
+      const elB = document.getElementById(idB);
+      if (elA && elB) {
+        elA.addEventListener("input", () => (elB.value = elA.value));
+        elB.addEventListener("input", () => (elA.value = elB.value));
+      }
+    }
 
     // WhatsApp template tag insertion chips & reset button
     document.querySelectorAll(".js-insert-wa-tag").forEach((chip) => {
