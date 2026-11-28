@@ -235,10 +235,21 @@ const server = http.createServer((req, res) => {
     }
   }
 
-  let filePath = path.join(
-    PUBLIC_DIR,
-    urlPath === "/" ? "index.html" : urlPath === "/admin" ? "admin.html" : urlPath
-  );
+  const cleanPath = urlPath.replace(/\/+$/, "") || "/";
+  let resolvedRel = "index.html";
+  if (cleanPath === "/" || cleanPath === "/index.html") {
+    resolvedRel = "index.html";
+  } else if (cleanPath === "/admin" || cleanPath === "/painel" || cleanPath === "/login") {
+    resolvedRel = "admin.html";
+  } else if (cleanPath === "/privacidade" || cleanPath === "/politica-de-privacidade" || cleanPath === "/privacy") {
+    resolvedRel = "privacy.html";
+  } else if (cleanPath === "/termos" || cleanPath === "/termos-de-uso" || cleanPath === "/terms") {
+    resolvedRel = "terms.html";
+  } else {
+    resolvedRel = cleanPath.replace(/^\/+/, "");
+  }
+
+  let filePath = path.join(PUBLIC_DIR, resolvedRel);
 
   if (!filePath.startsWith(PUBLIC_DIR)) {
     res.writeHead(403);
@@ -252,6 +263,14 @@ const server = http.createServer((req, res) => {
       "Cache-Control": "no-store, no-cache, must-revalidate"
     });
     fs.createReadStream(filePath).pipe(res);
+  } else if (!/\.(css|js|png|jpe?g|webp|svg|ico|json|xml|txt)$/i.test(cleanPath)) {
+    // Anti-404 Fallback: any unknown route serves index.html with HTTP 200 (mirrors Cloudflare _middleware.js)
+    const indexFile = path.join(PUBLIC_DIR, "index.html");
+    res.writeHead(200, {
+      "Content-Type": MIME[".html"],
+      "Cache-Control": "no-store, no-cache, must-revalidate"
+    });
+    fs.createReadStream(indexFile).pipe(res);
   } else {
     res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     res.end("404 Not Found");

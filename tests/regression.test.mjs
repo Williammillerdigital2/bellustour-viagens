@@ -541,6 +541,7 @@ async function runTests() {
     );
 
     const authAndPasswordChangeCheck = await page.eval(async () => {
+      document.getElementById("admin-logout-btn")?.click();
       const gate = document.getElementById("admin-login-gate");
       const gateVisibleBeforeLogin = !gate.classList.contains("hidden");
 
@@ -916,6 +917,36 @@ async function runTests() {
         JSON.stringify(mobTabsOverflowCheck)
       );
     }
+
+    // Regression #19: Zero-404 Redundant Routing (/admin, /admin/, /painel, /privacidade, /termos, /cruzeiros, and arbitrary unknown URLs must ALL return HTTP 200 OK!)
+    const redundantRoutesCheck = await page.eval(async () => {
+      const routesToTest = [
+        "/",
+        "/admin",
+        "/admin/",
+        "/painel",
+        "/privacidade",
+        "/termos",
+        "/cruzeiros",
+        "/promocionais",
+        "/rota-inexistente-teste-123"
+      ];
+      const statuses = [];
+      for (const r of routesToTest) {
+        const res = await fetch(r);
+        statuses.push({ route: r, status: res.status });
+      }
+      return {
+        all200: statuses.every((s) => s.status === 200),
+        statuses
+      };
+    });
+
+    assert(
+      redundantRoutesCheck.all200,
+      "REGRESSION #19 (Zero-404 Redundant Routing): All friendly aliases (/admin, /admin/, /painel, /privacidade, /termos, /cruzeiros) and unknown routes return HTTP 200 OK without 404",
+      JSON.stringify(redundantRoutesCheck)
+    );
 
     page.close();
   } finally {

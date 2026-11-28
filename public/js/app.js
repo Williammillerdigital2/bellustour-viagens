@@ -777,16 +777,18 @@
       window.open(waUrl, "_blank", "noopener,noreferrer");
     });
 
-    // Check URL hash on load (e.g., #cruzeiros opens the category popup directly)
+    // Check URL hash OR pathname on load (e.g., #cruzeiros or /cruzeiros opens the category popup directly)
     const initialHash = (location.hash || "").replace("#", "");
+    const initialPathSlug = (location.pathname || "").replace(/^\/+|\/+$/g, "");
+    const targetCatSlug = initialHash || initialPathSlug;
     if (
-      initialHash &&
-      (siteConfig.categories || []).some((c) => c.id === initialHash)
+      targetCatSlug &&
+      (siteConfig.categories || []).some((c) => c.id === targetCatSlug)
     ) {
-      const idx = siteConfig.categories.findIndex((c) => c.id === initialHash);
+      const idx = siteConfig.categories.findIndex((c) => c.id === targetCatSlug);
       if (idx >= 0) activeCatIndex = idx;
       update3DCategoryPositions();
-      openCategoryPopup(initialHash);
+      openCategoryPopup(targetCatSlug);
     }
   }
 
