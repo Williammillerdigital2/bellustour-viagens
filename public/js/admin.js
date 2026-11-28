@@ -260,8 +260,8 @@
     setVal("adm-hero-title", b.heroTitle || "");
     setVal("adm-email", b.email || "");
     setVal("adm-cnpj", b.cnpj || "");
-    setVal("adm-hours-weekdays", b.hoursWeekdays || "Segunda à Sexta: 09h às 20h");
-    setVal("adm-hours-saturday", b.hoursSaturday || "Sábado das 09h às 16h");
+    setVal("adm-hours-weekdays", b.hoursWeekdays || "Atendimento 24 horas — Todos os dias");
+    setVal("adm-hours-saturday", b.hoursSaturday !== undefined ? b.hoursSaturday : "");
     setVal("adm-address", b.address || "");
 
     setVal("adm-pop-title", p.welcomeTitle || "");
@@ -331,8 +331,8 @@
     config.brand.heroTitle = getVal("adm-hero-title").trim();
     config.brand.email = getVal("adm-email").trim();
     config.brand.cnpj = getVal("adm-cnpj").trim();
-    config.brand.hoursWeekdays = getVal("adm-hours-weekdays").trim() || "Segunda à Sexta: 09h às 20h";
-    config.brand.hoursSaturday = getVal("adm-hours-saturday").trim() || "Sábado das 09h às 16h";
+    config.brand.hoursWeekdays = getVal("adm-hours-weekdays").trim() || "Atendimento 24 horas — Todos os dias";
+    config.brand.hoursSaturday = getVal("adm-hours-saturday").trim();
     config.brand.address = getVal("adm-address").trim();
 
     config.popup = config.popup || {};

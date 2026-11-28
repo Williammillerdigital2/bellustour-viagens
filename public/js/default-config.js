@@ -16,8 +16,8 @@ window.BELLUSTOUR_DEFAULT_CONFIG = {
     "email": "matheus.belluco01@live.com",
     "cnpj": "70.339.841/0001-03",
     "address": "Atendimento Digital em Todo o Brasil • Especialista em Cruzeiros",
-    "hoursWeekdays": "Segunda à Sexta: 09h às 20h",
-    "hoursSaturday": "Sábado das 09h às 16h",
+    "hoursWeekdays": "Atendimento 24 horas — Todos os dias",
+    "hoursSaturday": "",
     "phoneDisplay": "11 97665-5534"
   },
   "popup": {
@@ -312,8 +312,8 @@ window.BELLUSTOUR_DEFAULT_CONFIG = {
     "footerCol2WaText": "Atendimento por WhatsApp",
     "footerCol3Title": "Termos",
     "phoneDisplay": "11 97665-5534",
-    "hoursWeekdays": "Segunda à Sexta: 09h às 20h",
-    "hoursSaturday": "Sábado das 09h às 16h",
+    "hoursWeekdays": "Atendimento 24 horas — Todos os dias",
+    "hoursSaturday": "",
     "aboutTitle": "Sobre a Bellustour Viagens & Cruzeiros",
     "aboutText1": "A Bellustour é uma agência de viagens e turismo com atuação 100% digital em todo o Brasil, fundada e conduzida pelo especialista Matheus. Nosso foco principal é a curadoria de Cruzeiros Marítimos Nacionais e Internacionais (com saídas de Santos, Rio de Janeiro, Salvador, Maceió, Itajaí, Rio da Prata e Caribe), além de pacotes completos para resorts nacionais, destinos internacionais e oportunidades promocionais.",
     "aboutText2": "Operamos em formato digital direto e personalizado — sem intermediação de franquias ou lojas físicas — o que nos permite oferecer atendimento consultivo ágil pelo WhatsApp, acompanhamento individualizado antes, durante e após o embarque, e acesso rápido às melhores tarifas e cabines das principais companhias marítimas e aéreas.",

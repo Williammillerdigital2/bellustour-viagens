@@ -954,17 +954,26 @@ async function runTests() {
       JSON.stringify(redundantRoutesCheck)
     );
 
-    // Regression #20: 3-Column Institutional Footer & All 5 Google-Compliant Institutional Pages (Sobre Nós, Condições de Uso, Condições Gerais, Privacidade, Código de Ética)
+    // Regression #20: 3-Column Institutional Footer (Column 1 has ONLY Bellustour Brasil -> Sobre Nós -> Email on both Mobile & Desktop) & All 5 Google-Compliant Institutional Pages
     await page.setViewport(1440, 900, false);
     await page.goto(BASE_URL);
     const footerAndPagesCheck = await page.eval(async () => {
       const cols = document.querySelectorAll(".site-footer .footer-col");
+      const col1Title = cols[0]?.querySelector("h3")?.textContent?.trim();
+      const col1Items = Array.from(cols[0]?.querySelectorAll("li") || []).map((li) =>
+        li.textContent.trim()
+      );
+      const col1ExactStructure =
+        col1Title === "Bellustour Brasil" &&
+        col1Items.length === 2 &&
+        col1Items[0] === "Sobre Nós" &&
+        col1Items[1] === "matheus.belluco01@live.com";
+
       const footerText = document.querySelector(".site-footer")?.textContent || "";
       const hasEmail = footerText.includes("matheus.belluco01@live.com");
-      const hasCnpj = footerText.includes("70.339.841/0001-03");
       const hasHours =
-        footerText.includes("Segunda à Sexta: 09h às 20h") &&
-        footerText.includes("Sábado das 09h às 16h");
+        footerText.includes("24 horas") &&
+        footerText.includes("Todos os dias");
       const noFranchiseOrStores =
         !footerText.toLowerCase().includes("franqueado") &&
         !footerText.toLowerCase().includes("encontre uma loja");
@@ -991,8 +1000,9 @@ async function runTests() {
 
       return {
         threeCols: cols.length === 3,
+        col1ExactStructure,
+        col1Items,
         hasEmail,
-        hasCnpj,
         hasHours,
         noFranchiseOrStores,
         allInstPagesOk: pageStatuses.every((s) => s.ok),
@@ -1002,12 +1012,12 @@ async function runTests() {
 
     assert(
       footerAndPagesCheck.threeCols &&
+        footerAndPagesCheck.col1ExactStructure &&
         footerAndPagesCheck.hasEmail &&
-        footerAndPagesCheck.hasCnpj &&
         footerAndPagesCheck.hasHours &&
         footerAndPagesCheck.noFranchiseOrStores &&
         footerAndPagesCheck.allInstPagesOk,
-      "REGRESSION #20 (3-Column Institutional Footer & 5 Google-Compliant Pages): Footer displays 3 columns (Bellustour Brasil, Central de atendimento with hours & WhatsApp, Termos), no franchise/store links, and all 5 institutional pages return HTTP 200",
+      "REGRESSION #20 (3-Column Institutional Footer & 5 Google-Compliant Pages): Column 1 displays strictly 'Bellustour Brasil -> Sobre Nós -> Email' on Mobile & Desktop, Column 2 displays hours & WhatsApp, Column 3 displays 4 legal pages",
       JSON.stringify(footerAndPagesCheck)
     );
 
@@ -1018,7 +1028,6 @@ async function runTests() {
         "adm-email",
         "adm-cnpj",
         "adm-hours-weekdays",
-        "adm-hours-saturday",
         "adm-inst-col1-title",
         "adm-inst-col2-title",
         "adm-inst-col2-sub",

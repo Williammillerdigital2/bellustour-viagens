@@ -41,8 +41,13 @@
       (rawWa.length >= 12
         ? `${rawWa.slice(2, 4)} ${rawWa.slice(4, 9)}-${rawWa.slice(9)}`
         : b.whatsappNumber || "11 97665-5534");
-    const weekdays = inst.hoursWeekdays || b.hoursWeekdays || "Segunda à Sexta: 09h às 20h";
-    const saturday = inst.hoursSaturday || b.hoursSaturday || "Sábado das 09h às 16h";
+    const weekdays = inst.hoursWeekdays || b.hoursWeekdays || "Atendimento 24 horas — Todos os dias";
+    const saturday =
+      inst.hoursSaturday !== undefined
+        ? inst.hoursSaturday
+        : b.hoursSaturday !== undefined
+          ? b.hoursSaturday
+          : "";
 
     document.querySelectorAll(".js-inst-email").forEach((el) => {
       el.textContent = email;
@@ -71,6 +76,7 @@
 
     document.querySelectorAll(".js-inst-saturday").forEach((el) => {
       el.textContent = saturday;
+      el.style.display = saturday ? "" : "none";
     });
 
     // Dynamic page content fields editable from Admin Tab 5

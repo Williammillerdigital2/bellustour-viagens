@@ -134,8 +134,21 @@
 
     setText("footer-cnpj-text", b.cnpj || "70.339.841/0001-03");
     setText("footer-cnpj-bottom", b.cnpj || "70.339.841/0001-03");
-    setText("footer-hours-weekdays", inst.hoursWeekdays || b.hoursWeekdays || "Segunda à Sexta: 09h às 20h");
-    setText("footer-hours-saturday", inst.hoursSaturday || b.hoursSaturday || "Sábado das 09h às 16h");
+    setText(
+      "footer-hours-weekdays",
+      inst.hoursWeekdays || b.hoursWeekdays || "Atendimento 24 horas — Todos os dias"
+    );
+    const satVal =
+      inst.hoursSaturday !== undefined
+        ? inst.hoursSaturday
+        : b.hoursSaturday !== undefined
+          ? b.hoursSaturday
+          : "";
+    const satEl = document.getElementById("footer-hours-saturday");
+    if (satEl) {
+      satEl.textContent = satVal;
+      satEl.style.display = satVal ? "" : "none";
+    }
     setText("footer-brand-copy", (b.name || "Bellustour") + " Viagens & Cruzeiros");
     setText("footer-address-text", b.address || "Atendimento Digital em Todo o Brasil • Especialista em Cruzeiros");
     setText("footer-year", new Date().getFullYear());
